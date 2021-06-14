@@ -25,9 +25,9 @@ Please follow the code convention described below (subject to change):
 ## Usage: Read Stopword File
 ## --------------------------------
 class Stopwords(object):
-  	# read & preprocess the file
+    # read & preprocess the file
     # Params:
-  	# file_dir: str | directory of file
+    # file_dir: str | directory of file
     # Return:
     # None
     def __init__(self, file_dir):
@@ -45,7 +45,7 @@ class Stopwords(object):
 		
     # give the list of stopwords
     # Params:
-  	# None
+    # None
     # Return:
     # self.stopwords_list: list | list of stopwords
     def dump_stopwords(self):

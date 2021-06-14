@@ -2,7 +2,7 @@
 
 ### Members: 
 
-Du, Li | ld2342@nyu.edu
+Du, Li | ld2342@nyu.edu | Nanjing | GMT+8 
 
 Cai, Shuhong |  sc8540@nyu.edu
 

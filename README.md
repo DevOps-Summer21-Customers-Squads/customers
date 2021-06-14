@@ -4,7 +4,7 @@
 
 Du, Li | ld2342@nyu.edu | Nanjing | GMT+8 
 
-Cai, Shuhong |  sc8540@nyu.edu
+Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
 
 Zhang, Teng |  tz2179@nyu.edu | Ningbo | GMT+8 
 

@@ -79,7 +79,7 @@ def create_customers():
     check_content_type("application/json")
     customer = Customer()
     customer.deserialize(request.get_json())
-    customer.create()
+    customer.save()
     message = customer.serialize()
     location_url = url_for("get_customers", pet_id=customer.customer_id, _external=True)
 
@@ -87,3 +87,22 @@ def create_customers():
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
+
+
+### -----------------------------------------------------------
+### LIST ALL CUSTOMERS
+### -----------------------------------------------------------
+@app.route("/customers", methods=["GET"])
+def list_customers():
+    """
+    Returns all of the Customers
+    """
+    app.logger.info("Request for customer list")
+    customers = []
+    #category = request.args.get("category")
+    #name = request.args.get("name")
+    customers = Customer.all()
+
+    results = [c.serialize() for c in customers]
+    app.logger.info("Returning %d customers", len(results))
+    return make_response(jsonify(results), status.HTTP_200_OK)

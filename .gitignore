@@ -8,3 +8,6 @@
 service/__pycache__/*
 __pycache__/
 *.pyc
+
+# VSCode
+.vscode

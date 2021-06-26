@@ -126,9 +126,7 @@ class TestCustomers(unittest.TestCase):
         self.assertTrue(cust != None)
         self.assertEqual(cust.customer_id, None)
         self.assertEqual(cust.address_id, None)
-
         cust.save()
-
         addr = Address (
             street="100 W 100th St.",
             apartment="Taipei 101",
@@ -143,12 +141,11 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(addr.id, 1)
         custs = Customer.all()
         self.assertEqual(len(custs), 1)
-
         self.assertEqual(cust.customer_id, 1)
         custs = Customer.all()
         self.assertEqual(len(custs), 1)        
 
-    def test_update_customer_and_address(self):
+    def test_update_customer_password(self):
         """ 
         Update the Password of a Customer 
         """
@@ -168,3 +165,44 @@ class TestCustomers(unittest.TestCase):
         customer = Customer.all()
         self.assertEqual(len(customer), 1)
         self.assertEqual(customer[0].password, "devops is cool")
+
+    def test_delete_customer(self):
+        """ 
+        Delete a Customer (and associated Address) and check non-existence in the database
+        """
+        customer = Customer(first_name="Marry", last_name="Wang", user_id="marrywang", password="password", active = True)
+        customer.save()
+        address = Address(street = "100 W 100 St.", apartment = "100", city = "New York", state = "New York", zip_code = "100")
+        address.customer_id = customer.customer_id
+        address.save()
+        customer.address_id = address.id
+        customer.save()
+        self.assertEqual(len(Customer.all()), 1)
+        self.assertEqual(len(Address.all()), 1)
+        # delete the customer and make sure it isn't in the database
+        customer.delete()
+        self.assertEqual(len(Customer.all()), 0)
+        self.assertEqual(len(Address.all()), 0)
+
+    def test_list_customers(self):
+        """ 
+        Create two Customers and list them all
+        """
+        cust1 = Customer (
+            first_name="Shuhong",
+            last_name="Cai",
+            user_id="sc8540@nyu.edu",
+            password="gmt+8",
+            active = True
+        )
+        cust1.save()
+        cust2 = Customer (
+            first_name="Teng",
+            last_name="Zhang",
+            user_id="tz2179@nyu.edu",
+            password="ANingbo",
+            active = True,
+        )
+        cust2.save()
+        all_customers = Customer.all()
+        self.assertEquals(len(all_customers), 2)

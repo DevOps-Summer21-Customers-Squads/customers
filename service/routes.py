@@ -1,4 +1,3 @@
-
 # Copyright 2016, 2019 John J. Rofrano. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -114,7 +113,41 @@ def list_customers():
     return make_response(jsonify(results), status.HTTP_200_OK)
 
 
+### -----------------------------------------------------------
+### UPDATE AN EXISTING CUSTOMERS
+### -----------------------------------------------------------
+@app.route("/customers/<int:customer_id>", methods=["PUT"])
+def update_customers(customer_id):
+    """
+    Update a Customer
+    """
+    app.logger.info("Request to update customer with id: %s", customer_id)
+    check_content_type("application/json")
+    cust = Customer.find(customer_id, filter_activate=False)
+    if not cust:
+        raise NotFound("Pet with id '{}' was not found.".format(customer_id))
+    cust.deserialize(request.get_json())
+    cust.customer_id = customer_id
+    cust.save()
 
+    app.logger.info("Pet with ID [%s] updated.", cust.customer_id)
+    return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
+
+
+
+### -----------------------------------------------------------
+### DELETE A CUSTOMER
+### -----------------------------------------------------------
+@app.route("/customers/<int:customer_id>", methods=["DELETE"])
+def delete_customers(customer_id):
+    """
+    Delete an Account based on specified ID
+    """
+    app.logger.info("Request to delete customer with id: %s", customer_id)
+    customer = Customer.find(customer_id)
+    if customer:
+        customer.delete()
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ### -----------------------------------------------------------

@@ -66,5 +66,3 @@ if __name__ == '__main__':
     for _ in range(20):
         customer = CustomerFactory()
         address = AddressFactory()
-        print(customer.serialize())
-        print(address.serialize())

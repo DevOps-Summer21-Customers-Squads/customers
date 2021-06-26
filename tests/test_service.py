@@ -149,12 +149,27 @@ class TestCustomerServer(unittest.TestCase):
                             content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
-
     def test_customer_not_found(self):
         """ 
-        Test looking for a non-existent Customer
+        Test looking for a non-existent Customer on Server
         """
         _ = self._fake_customers(1)
-        resp = self.app.get('/customers/{}'.format("xyz"),
+        resp = self.app.get('/customers/{}'.format("monkey"),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    '''
+    def test_update_customer(self):
+        """ 
+        Update the first name of an existing Customer on Server
+        """
+        customers = self._fake_customers(1)
+        test_customer = customers[0]
+        test_customer.first_name = 'Ken S.'
+        cust_json = test_customer.alternative_serialize()
+        cust_json["address"] = Address.find(test_customer.address_id)
+        resp = self.app.put('/customers/{}'.format(test_customer.customer_id),
+                            json=cust_json, content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        updated_customer = resp.get_json()
+        self.assertEqual(updated_customer['first_name'], 'Ken S.')
+    '''

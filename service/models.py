@@ -182,6 +182,17 @@ class Customer(db.Model):
     def disconnect():
         db.session.remove()
 
+    @classmethod
+    def find(cls, customer_id, filter_activate = True):
+        """ 
+        Find a Customer by customer_id
+        """
+        logger.info('Processing customer lookup for user id %s ...', customer_id)
+        if filter_activate:
+            return cls.query.filter(cls.customer_id == customer_id and cls.active)
+        else:
+            return cls.query.filter(cls.customer_id == customer_id)
+
 
 ### -----------------------------------------------------------
 ### CLASS Address

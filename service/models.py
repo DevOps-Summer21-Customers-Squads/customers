@@ -98,6 +98,18 @@ class Customer(db.Model):
                 "address": Address.find(self.address_id)
             }
 
+    def alternative_serialize(self):
+        """
+        Serialize a Customer into a dictionary (Internal)
+        """
+        return {
+                "first_name": self.first_name,
+                "last_name": self.last_name,
+                "user_id": self.user_id,
+                "password": self.password,
+                "active": self.active,
+            }
+
     def deserialize(self, data):
         """
         Deserialize a Customer from a dictionary
@@ -242,6 +254,17 @@ class Address(db.Model):
         return cls.query.all()
 
     @classmethod
+    def find(cls, addr_id):
+        """
+        Find an Address by its ID 
+        """
+        logger.info('Looking up Address for id %s ...', addr_id)
+        this_address = cls.query.get(addr_id)
+        if this_address:
+            print(this_address)
+        return this_address.serialize()
+
+    @classmethod
     def delete(cls, addr_id):
         """ 
         Remove a Address from the database
@@ -258,3 +281,4 @@ class Address(db.Model):
         for address in cls.query.all():
             db.session.delete(address)
         db.session.commit()
+

@@ -45,7 +45,7 @@ from werkzeug.exceptions import NotFound
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
 from flask_sqlalchemy import SQLAlchemy
-from service.models import Customer, DataValidationError
+from service.models import Customer, Address, DataValidationError
 
 # Import Flask application
 from . import app
@@ -80,9 +80,15 @@ def create_customers():
     customer = Customer()
     customer.deserialize(request.get_json())
     customer.save()
+    customer_id = customer.customer_id
+    address = Address()
+    address.deserialize(request.get_json()['address'])
+    address.customer_id = customer_id
+    address.save()
+    customer.address_id = address.id
+    customer.save()
     message = customer.serialize()
-    location_url = url_for("get_customers", pet_id=customer.customer_id, _external=True)
-
+    location_url = url_for("create_customers", pet_id=customer.customer_id, _external=True)
     app.logger.info("Customer with ID [%s] created.", customer.customer_id)
     return make_response(
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
@@ -106,3 +112,21 @@ def list_customers():
     results = [c.serialize() for c in customers]
     app.logger.info("Returning %d customers", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
+
+
+
+
+
+### -----------------------------------------------------------
+### Auxiliary Utilites
+### -----------------------------------------------------------
+def check_content_type(media_type):
+    """Checks that the media type is correct"""
+    content_type = request.headers.get("Content-Type")
+    if content_type and content_type == media_type:
+        return
+    app.logger.error("Invalid Content-Type: %s", content_type)
+    abort(
+        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+        "Content-Type must be {}".format(media_type),
+    )

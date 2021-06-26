@@ -71,12 +71,15 @@ class TestCustomers(unittest.TestCase):
     ### Testcases:
     ### -----------------------------------------------------------
     def test_create_customer(self):
-        """ Create a customer and check that it exists """
+        """
+        Create a Customer and check that it exists 
+        """
         cust = Customer (
             first_name="Michael",
             last_name="Jackson",
             user_id="mj",
             password="password",
+            active=True,
             address_id="1000",
         )
         self.assertTrue(cust != None)
@@ -85,21 +88,83 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(cust.last_name, "Jackson")
         self.assertEqual(cust.user_id, "mj")
         self.assertEqual(cust.password, "password")
+        self.assertEqual(cust.active, True)
         self.assertEqual(cust.address_id, "1000")
 
     def test_create_address(self):
-        """ Create an address and check that it exists """
+        """ 
+        Create an Address and check that it exists 
+        """
         addr = Address (
             street="W 100th St.",
-            apartment="XXX",
+            apartment="OMS",
             city="New York City",
             state="New York",
             zip_code="10030",
-            customer_id=1
+            customer_id=1,
         )
         self.assertTrue(addr != None)
         self.assertEqual(addr.id, None)
         self.assertEqual(addr.street, "W 100th St.")
-        self.assertEqual(addr.apartment, "XXX")
+        self.assertEqual(addr.apartment, "OMS")
         self.assertEqual(addr.city, "New York City")
         self.assertEqual(addr.zip_code, "10030")
+
+    def test_add_customer_and_address(self):
+        """ 
+        Create a Customer (and associated Address) and add it to the database
+        """
+        custs = Customer.all()
+        self.assertEqual(custs, [])
+        cust = Customer (
+            first_name="Joanna",
+            last_name="Wang",
+            user_id="jwang",
+            password="devops",
+            active = True
+        )
+        self.assertTrue(cust != None)
+        self.assertEqual(cust.customer_id, None)
+        self.assertEqual(cust.address_id, None)
+
+        cust.save()
+
+        addr = Address (
+            street="100 W 100th St.",
+            apartment="Taipei 101",
+            city="Taipei",
+            state="Taiwan",
+            zip_code="10035",
+        )
+        addr.customer_id = cust.customer_id
+        addr.save()
+        cust.address_id = addr.id
+        # Assert that it was assigned an id and shows up in the database
+        self.assertEqual(addr.id, 1)
+        custs = Customer.all()
+        self.assertEqual(len(custs), 1)
+
+        self.assertEqual(cust.customer_id, 1)
+        custs = Customer.all()
+        self.assertEqual(len(custs), 1)        
+
+    def test_update_customer_and_address(self):
+        """ 
+        Update the Password of a Customer 
+        """
+        customer = Customer(
+            first_name="Joanna",
+            last_name="Wang",
+            user_id="jwang",
+            password="devops",
+            active = True,
+            address_id = 0,
+        )
+        customer.save()
+        self.assertEqual(customer.customer_id, 1)
+        customer.password = "devops is cool"
+        customer.save()
+        self.assertEqual(customer.customer_id, 1)
+        customer = Customer.all()
+        self.assertEqual(len(customer), 1)
+        self.assertEqual(customer[0].password, "devops is cool")

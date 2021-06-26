@@ -12,6 +12,11 @@ __pycache__/
 # VSCode
 .vscode
 
+# coverage
 coverage.xml
+.coverage.*
+.coverage
 
+# test
 unittests.xml 
+

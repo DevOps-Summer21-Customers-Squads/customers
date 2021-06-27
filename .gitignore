@@ -1,0 +1,22 @@
+# DS_Store
+.DS_Store
+
+# Vagrant
+.vagrant
+
+# Caching
+service/__pycache__/*
+__pycache__/
+*.pyc
+
+# VSCode
+.vscode
+
+# coverage
+coverage.xml
+.coverage.*
+.coverage
+
+# test
+unittests.xml 
+

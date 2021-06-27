@@ -1,0 +1,160 @@
+# Copyright 2016, 2021 John J. Rofrano. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+### -----------------------------------------------------------
+###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Members:
+###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
+###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
+###     Zhang, Teng | tz2179@nyu.edu | Ningbo | GMT+8
+###     Zhang, Ken | sz1851@nyu.edu | Shanghai | GMT+8
+###     Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
+### -----------------------------------------------------------
+
+
+import logging
+import unittest
+import os
+from flask_api import status    # HTTP Status Codes
+from unittest.mock import MagicMock, patch
+from tests.factory_test import CustomerFactory, AddressFactory
+from service.models import Customer, Address, DataValidationError, db
+from service.routes import app
+
+DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
+BASE_URL = "/customers"
+CONTENT_TYPE_JSON = "application/json"
+
+
+### -----------------------------------------------------------
+### TESTCASE MODULE for Customer System Server
+### -----------------------------------------------------------
+class TestCustomerServer(unittest.TestCase):
+    """Test Cases for Customer Server"""
+    @classmethod
+    def setUpClass(cls):
+        """This runs once before the entire test suite"""
+        app.config["TESTING"] = True
+        app.config["DEBUG"] = False
+        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
+        app.logger.setLevel(logging.CRITICAL)
+        Customer.init_db(app)
+
+    @classmethod
+    def tearDownClass(cls):
+        """This runs once after the entire test suite"""
+        db.session.close()
+
+    def setUp(self):
+        """This runs before each test"""
+        db.drop_all()  # clean up the last tests
+        db.create_all()  # make our sqlalchemy tables
+        self.app = app.test_client()
+
+    def tearDown(self):
+        """This runs after each test"""
+        db.session.remove()
+        db.drop_all()
+
+    def _fake_customers(self, num):
+        """Factory method to fake customers in batch"""
+        customers = []
+        for _ in range(num):
+            test_customer = CustomerFactory()
+            test_address = AddressFactory()
+            addr_json = test_address.serialize()
+            cust_json = test_customer.alternative_serialize()
+            cust_json["address"] = addr_json
+            resp = self.app.post(BASE_URL,
+                                 json=cust_json,
+                                 content_type=CONTENT_TYPE_JSON)
+            self.assertEqual(resp.status_code, status.HTTP_201_CREATED, 'Could not create Customer')
+            new_cust = resp.get_json()
+            test_customer.customer_id = new_cust["customer_id"]
+            addr = new_cust["address"]
+            test_customer.address_id = addr["id"]
+            customers.append(test_customer)
+        return customers
+    
+    ### -----------------------------------------------------------
+    ### Testcases:
+    ### -----------------------------------------------------------
+    def test_create_customer(self):
+        """
+        Create a new Customer on Server
+        """
+        body = {
+            "first_name": "Young",
+            "last_name": "Nick",
+            "user_id": "confused",
+            "password": "lakers",
+            "address": {
+                "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            }
+        }
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        # Make sure location header is set
+        location = resp.headers.get('Location', None)
+        self.assertTrue(location != None)
+        # Check the data is correct
+        new_customer = resp.get_json()
+        self.assertEqual(new_customer['first_name'], "Young", "first_name do not match")
+        self.assertEqual(new_customer['last_name'], "Nick", "last_name do not match")
+        self.assertEqual(new_customer['user_id'], "confused", "user_id do not match")
+        self.assertEqual(new_customer['active'], True, "active status not match")
+        resp = self.app.get(location, content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        new_customer = resp.get_json()[0]
+        self.assertEqual(new_customer['first_name'], "Young", "first_name do not match")
+        self.assertEqual(new_customer['last_name'], "Nick", "last_name do not match")
+        self.assertEqual(new_customer['user_id'], "confused", "user_id do not match")
+        self.assertEqual(new_customer['active'], True, "active status not match")
+
+    def test_create_customer_missing_last_name(self):
+        """ 
+        Test erroneous request when Creating a Customer with last_name missing
+        """
+        body = {
+            "first_name": "Young",
+            "user_id": "confused",
+            "password": "lakers",
+            "address": {
+                "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            }
+        }
+        resp = self.app.post(BASE_URL, 
+                             json=body, 
+                            content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_customer_not_found(self):
+        """ 
+        Test looking for a non-existent Customer on Server
+        """
+        _ = self._fake_customers(1)
+        resp = self.app.get('/customers/{}'.format("monkey"),
+                            content_type='application/json')
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+    

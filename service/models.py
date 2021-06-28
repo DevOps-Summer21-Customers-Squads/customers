@@ -119,7 +119,7 @@ class Customer(db.Model):
             self.last_name = data['last_name']
             self.user_id = data['user_id']
             self.password = data['password']
-            self.active = True
+            self.active = data['active']
         except KeyError as e:
             raise DataValidationError("Invalid Customer: Data Missing\n{}".format(e))
         except TypeError as e:
@@ -131,8 +131,8 @@ class Customer(db.Model):
         Save a Customer
         """
         logger.info('Saving %s %s', self.first_name, self.last_name)
-        if not self.customer_id:
-            db.session.add(self)
+        self.id = None # id must be none to generate next primary key
+        db.session.add(self)
         db.session.commit()
         logger.info('Customer saved!')
 
@@ -189,10 +189,52 @@ class Customer(db.Model):
         """
         logger.info('Processing customer lookup for user id %s ...', customer_id)
         if filter_activate:
-            return cls.query.filter(cls.customer_id == customer_id and cls.active)
+            return cls.query.filter(cls.customer_id == customer_id and cls.active).first()
         else:
-            return cls.query.filter(cls.customer_id == customer_id)
+            return cls.query.filter(cls.customer_id == customer_id).first()
 
+    @classmethod
+    def find_by_first_name(cls, first_name):
+        """Returns all Customers with the given first name
+
+        :param name: the first name of the Customers you want to match
+        :type name: str
+
+        :return: a collection of Customers with that first name
+        :rtype: list
+
+        """
+        logger.info("Processing first name query for %s ...", first_name)
+        return cls.query.filter(cls.first_name == first_name)
+    
+    @classmethod
+    def find_by_last_name(cls, last_name):
+        """Returns all Customers with the given last name
+
+        :param name: the last name of the Customers you want to match
+        :type name: str
+
+        :return: a collection of Customers with that last name
+        :rtype: list
+
+        """
+        logger.info("Processing last name query for %s ...", last_name)
+        return cls.query.filter(cls.last_name == last_name)
+    
+    @classmethod
+    def find_by_active(cls, active = True):
+        """Returns all Customers with the given active status
+
+        :param name: the active status of the Customers you want to match
+        :type name: str
+
+        :return: a collection of Customers with that active status
+        :rtype: list
+
+        """
+        logger.info("Processing active status query for %s ...", active)
+        return cls.query.filter(cls.active == active)
+        
 
 ### -----------------------------------------------------------
 ### CLASS Address

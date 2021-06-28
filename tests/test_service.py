@@ -27,6 +27,7 @@ import logging
 import unittest
 import os
 from flask_api import status    # HTTP Status Codes
+from urllib.parse import quote_plus
 from unittest.mock import MagicMock, patch
 from tests.factory_test import CustomerFactory, AddressFactory
 from service.models import Customer, Address, DataValidationError, db
@@ -105,7 +106,8 @@ class TestCustomerServer(unittest.TestCase):
                 "city": "LA",
                 "state": "Cali",
                 "zip_code": "100"
-            }
+            },
+            "active": True
         }
         resp = self.app.post(BASE_URL,
                              json=body,
@@ -153,8 +155,60 @@ class TestCustomerServer(unittest.TestCase):
         """ 
         Test looking for a non-existent Customer on Server
         """
-        _ = self._fake_customers(1)
+        self._fake_customers(1)
         resp = self.app.get('/customers/{}'.format("monkey"),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
     
+    def test_list_all_customers(self):
+        """Get a list of Pets"""
+        self._fake_customers(5)
+        resp = self.app.get(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), 5)
+    
+    def test_query_customer_list_by_first_name(self):
+        """Query Customers by First Name"""
+        customers = self._fake_customers(10)
+        test_first_name = customers[0].first_name
+        first_name_customers = [customer for customer in customers if customer.first_name == test_first_name]
+        resp = self.app.get(
+            BASE_URL, query_string="first_name={}".format(quote_plus(test_first_name))
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(first_name_customers))
+        # check the data just to be sure
+        for customer in data:
+            self.assertEqual(customer["first_name"], test_first_name)
+
+    def test_query_customer_list_by_last_name(self):
+        """Query Customers by Last Name"""
+        customers = self._fake_customers(10)
+        test_last_name = customers[0].last_name
+        last_name_customers = [customer for customer in customers if customer.last_name == test_last_name]
+        resp = self.app.get(
+            BASE_URL, query_string="last_name={}".format(quote_plus(test_last_name))
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(last_name_customers))
+        # check the data just to be sure
+        for customer in data:
+            self.assertEqual(customer["last_name"], test_last_name)
+    
+    def test_query_customer_list_by_active(self):
+        """Query Customers by Active Status"""
+        customers = self._fake_customers(3)
+        test_active = customers[0].active
+        active_customers = [customer for customer in customers if customer.active == test_active]
+        resp = self.app.get(
+            BASE_URL, query_string="active={}".format(test_active)
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(active_customers))
+        # check the data just to be sure
+        for customer in data:
+            self.assertEqual(customer["active"], test_active)

@@ -108,7 +108,7 @@ def get_customers(customer_id):
     if not customer:
         raise NotFound("Customer with id '{}' was not found.".format(customer_id))
 
-    app.logger.info("Returning customer: %s", customer.name)
+    app.logger.info("Returning customer: %s", customer.customer_id)
     return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------

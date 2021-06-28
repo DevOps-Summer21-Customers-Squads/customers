@@ -159,7 +159,21 @@ class TestCustomerServer(unittest.TestCase):
         resp = self.app.get('/customers/{}'.format("monkey"),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-    
+
+    def test_get_customer(self):
+        """Get a single Customer"""
+        # get the id of a customer
+        test_customer = self._fake_customers(1)[0]
+        resp = self.app.get("/customers/{}".format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(data["first_name"], test_customer.first_name)
+
+    def test_get_customer_not_found(self):
+        """Get a Customer thats not found"""
+        resp = self.app.get("/customers/0")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        
     def test_list_all_customers(self):
         """Get a list of Pets"""
         self._fake_customers(5)

@@ -208,4 +208,17 @@ class TestCustomers(unittest.TestCase):
         all_customers = Customer.all()
         self.assertEquals(len(all_customers), 2)
 
-
+    def test_find_customer(self):
+        """Find a Customer by ID"""
+        customers = CustomerFactory.create_batch(3)
+        for customer in customers:
+            customer.save()
+        logging.debug(customers)
+        # make sure they got saved
+        self.assertEquals(len(Customer.all()), 3)
+        # find the 2nd customer in the list
+        customer = Customer.find(customers[1].customer_id)
+        logging.debug(customer)
+        self.assertIsNot(customer, None)
+        self.assertEqual(customer.customer_id, customers[1].customer_id)
+        self.assertEqual(customer.password, customers[1].password)

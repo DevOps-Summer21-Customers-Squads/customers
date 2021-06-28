@@ -58,7 +58,7 @@ class CustomerFactory(factory.Factory):
     last_name = FuzzyChoice(["Wang", "Solomon"])
     user_id = FuzzyText(uuid.uuid4().hex[:6])
     password = FuzzyChoice(["123456", "abcdef"])
-    active = FuzzyChoice(choices=[True, False])
+    active = True
     address_id = factory.Sequence(lambda n: n)
 
 

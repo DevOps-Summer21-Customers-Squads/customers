@@ -128,6 +128,13 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(new_customer['user_id'], "confused", "user_id do not match")
         self.assertEqual(new_customer['active'], True, "active status not match")
 
+    def test_index(self):
+        """
+        Test Server index call
+        """
+        resp = self.app.get("/")
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
     def test_create_customer_missing_last_name(self):
         """ 
         Test erroneous request when Creating a Customer with last_name missing
@@ -138,6 +145,27 @@ class TestCustomerServer(unittest.TestCase):
             "password": "lakers",
             "address": {
                 "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            }
+        }
+        resp = self.app.post(BASE_URL, 
+                             json=body, 
+                            content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_customer_missing_street(self):
+        """ 
+        Test erroneous request when Creating a Customer with no street in Address
+        """
+        body = {
+            "last_name": "ken",
+            "first_name": "Young",
+            "user_id": "confused",
+            "password": "lakers",
+            "address": {
                 "apartment": "100",
                 "city": "LA",
                 "state": "Cali",

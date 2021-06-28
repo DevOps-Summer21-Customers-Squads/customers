@@ -30,7 +30,7 @@ Test cases can be run with:
 """
 
 import logging
-from tests.factory_test import CustomerFactory
+from tests.factory_test import CustomerFactory, AddressFactory
 import unittest
 import os
 from werkzeug.exceptions import NotFound
@@ -91,7 +91,7 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(cust.password, "password")
         self.assertEqual(cust.active, True)
         self.assertEqual(cust.address_id, "1000")
-
+    
     def test_create_address(self):
         """ 
         Create an Address and check that it exists 
@@ -185,6 +185,16 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(len(Customer.all()), 0)
         self.assertEqual(len(Address.all()), 0)
 
+    def test_remove_all_customer(self):
+        """ 
+        Remove all Customers in database and check it's empty
+        """
+        customers = CustomerFactory.create_batch(3)
+        for customer in customers:
+            customer.save()
+        _ = Customer.remove_all()
+        self.assertEqual(len(Customer.all()), 0)
+
     def test_list_customers(self):
         """ 
         Create two Customers and list them all
@@ -209,7 +219,9 @@ class TestCustomers(unittest.TestCase):
         self.assertEquals(len(all_customers), 2)
 
     def test_find_customer(self):
-        """Find a Customer by ID"""
+        """
+        Find a Customer by ID
+        """
         customers = CustomerFactory.create_batch(3)
         for customer in customers:
             customer.save()

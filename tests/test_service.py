@@ -173,7 +173,7 @@ class TestCustomerServer(unittest.TestCase):
         """Get a Customer thats not found"""
         resp = self.app.get("/customers/0")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-        
+
     def test_list_all_customers(self):
         """Get a list of Pets"""
         self._fake_customers(5)

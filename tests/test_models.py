@@ -30,6 +30,7 @@ Test cases can be run with:
 """
 
 import logging
+from tests.factory_test import CustomerFactory
 import unittest
 import os
 from werkzeug.exceptions import NotFound
@@ -206,3 +207,5 @@ class TestCustomers(unittest.TestCase):
         cust2.save()
         all_customers = Customer.all()
         self.assertEquals(len(all_customers), 2)
+
+

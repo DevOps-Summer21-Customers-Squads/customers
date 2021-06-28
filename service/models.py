@@ -131,8 +131,8 @@ class Customer(db.Model):
         Save a Customer
         """
         logger.info('Saving %s %s', self.first_name, self.last_name)
-        if not self.customer_id:
-            db.session.add(self)
+        self.id = None # id must be none to generate next primary key
+        db.session.add(self)
         db.session.commit()
         logger.info('Customer saved!')
 
@@ -189,9 +189,9 @@ class Customer(db.Model):
         """
         logger.info('Processing customer lookup for user id %s ...', customer_id)
         if filter_activate:
-            return cls.query.filter(cls.customer_id == customer_id and cls.active)
+            return cls.query.filter(cls.customer_id == customer_id and cls.active).first()
         else:
-            return cls.query.filter(cls.customer_id == customer_id)
+            return cls.query.filter(cls.customer_id == customer_id).first()
 
 
 ### -----------------------------------------------------------

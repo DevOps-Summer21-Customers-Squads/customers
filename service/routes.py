@@ -93,6 +93,23 @@ def create_customers():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
+######################################################################
+# RETRIEVE A Customer
+######################################################################
+@app.route("/customers/<int:customer_id>", methods=["GET"])
+def get_customers(customer_id):
+    """
+    Retrieve a single Customer
+
+    This endpoint will return a Customer based on it's id
+    """
+    app.logger.info("Request for customer with id: %s", customer_id)
+    customer = Customer.find(customer_id)
+    if not customer:
+        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+
+    app.logger.info("Returning customer: %s", customer.name)
+    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### LIST ALL CUSTOMERS

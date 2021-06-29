@@ -93,7 +93,7 @@ class TestCustomerServer(unittest.TestCase):
     ### -----------------------------------------------------------
     def test_create_customer(self):
         """
-        Create a new Customer on Server
+        Create new Customer on Server
         """
         body = {
             "first_name": "Young",
@@ -132,14 +132,14 @@ class TestCustomerServer(unittest.TestCase):
 
     def test_index(self):
         """
-        Test Server index call
+        Customer Server index call
         """
         resp = self.app.get("/")
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_create_customer_missing_last_name(self):
         """ 
-        Test erroneous request when Creating a Customer with last_name missing
+        <Anomaly> Create Customer with Last Name missing
         """
         body = {
             "first_name": "Young",
@@ -160,7 +160,7 @@ class TestCustomerServer(unittest.TestCase):
 
     def test_create_customer_missing_street(self):
         """ 
-        Test erroneous request when Creating a Customer with no street in Address
+        <Anomaly> Create Customer with Street missing
         """
         body = {
             "last_name": "ken",
@@ -181,15 +181,19 @@ class TestCustomerServer(unittest.TestCase):
 
     def test_customer_not_found(self):
         """ 
-        Test looking for a non-existent Customer on Server
+        <Anomaly> Query non-existent Customer
         """
         self._fake_customers(1)
         resp = self.app.get('/customers/{}'.format("monkey"),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        resp = self.app.get("/customers/100")
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_get_customer(self):
-        """Get a single Customer"""
+    def test_get_customer_by_id(self):
+        """
+        Get a single Customer by ID
+        """
         # get the id of a customer
         test_customer = self._fake_customers(1)[0]
         resp = self.app.get("/customers/{}".format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
@@ -197,13 +201,10 @@ class TestCustomerServer(unittest.TestCase):
         data = resp.get_json()
         self.assertEqual(data["first_name"], test_customer.first_name)
 
-    def test_get_customer_not_found(self):
-        """Get a Customer thats not found"""
-        resp = self.app.get("/customers/0")
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
     def test_list_all_customers(self):
-        """Get a list of Pets"""
+        """
+        List all Customers
+        """
         self._fake_customers(5)
         resp = self.app.get(BASE_URL)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -211,7 +212,9 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(len(data), 5)
     
     def test_query_customer_list_by_first_name(self):
-        """Query Customers by First Name"""
+        """
+        Query Customers by First Name
+        """
         customers = self._fake_customers(10)
         test_first_name = customers[0].first_name
         first_name_customers = [customer for customer in customers if customer.first_name == test_first_name]
@@ -226,7 +229,9 @@ class TestCustomerServer(unittest.TestCase):
             self.assertEqual(customer["first_name"], test_first_name)
 
     def test_query_customer_list_by_last_name(self):
-        """Query Customers by Last Name"""
+        """
+        Query Customers by Last Name
+        """
         customers = self._fake_customers(10)
         test_last_name = customers[0].last_name
         last_name_customers = [customer for customer in customers if customer.last_name == test_last_name]
@@ -241,7 +246,9 @@ class TestCustomerServer(unittest.TestCase):
             self.assertEqual(customer["last_name"], test_last_name)
     
     def test_query_customer_list_by_active(self):
-        """Query Customers by Active Status"""
+        """
+        Query Customers by Active Status
+        """
         customers = self._fake_customers(3)
         test_active = customers[0].active
         active_customers = [customer for customer in customers if customer.active == test_active]

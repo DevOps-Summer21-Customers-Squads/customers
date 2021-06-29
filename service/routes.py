@@ -93,9 +93,9 @@ def create_customers():
         jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
     )
 
-######################################################################
-# RETRIEVE A Customer
-######################################################################
+### -----------------------------------------------------------
+### RETRIEVE A Customer
+### -----------------------------------------------------------
 @app.route("/customers/<int:customer_id>", methods=["GET"])
 def get_customers(customer_id):
     """

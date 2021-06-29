@@ -222,3 +222,72 @@ class TestCustomers(unittest.TestCase):
         self.assertIsNot(customer, None)
         self.assertEqual(customer.customer_id, customers[1].customer_id)
         self.assertEqual(customer.password, customers[1].password)
+        
+    def test_find_by_first_name(self):
+        """Find a Customer by First Name"""
+        cust1 = Customer (
+            first_name="Li",
+            last_name="Du",
+            user_id="ld2342@nyu.edu",
+            password="gmt+8",
+            active = True
+        )
+        cust1.save()
+        cust2 = Customer (
+            first_name="Teng",
+            last_name="Zhang",
+            user_id="tz2179@nyu.edu",
+            password="ANingbo",
+            active = True,
+        )
+        cust2.save()
+        customers = Customer.find_by_first_name("Li")
+        self.assertEqual(customers[0].last_name, "Du")
+        self.assertEqual(customers[0].user_id, "ld2342@nyu.edu")
+        self.assertEqual(customers[0].active, True)
+
+    def test_find_by_last_name(self):
+        """Find a Customer by Last Name"""
+        cust1 = Customer (
+            first_name="Li",
+            last_name="Du",
+            user_id="ld2342@nyu.edu",
+            password="gmt+8",
+            active = True
+        )
+        cust1.save()
+        cust2 = Customer (
+            first_name="Teng",
+            last_name="Zhang",
+            user_id="tz2179@nyu.edu",
+            password="ANingbo",
+            active = True,
+        )
+        cust2.save()
+        customers = Customer.find_by_last_name("Du")
+        self.assertEqual(customers[0].first_name, "Li")
+        self.assertEqual(customers[0].user_id, "ld2342@nyu.edu")
+        self.assertEqual(customers[0].active, True)
+
+    def test_find_by_active(self):
+        """Find a Customer by Active Status"""
+        cust1 = Customer (
+            first_name="Li",
+            last_name="Du",
+            user_id="ld2342@nyu.edu",
+            password="gmt+8",
+            active = True
+        )
+        cust1.save()
+        cust2 = Customer (
+            first_name="Teng",
+            last_name="Zhang",
+            user_id="tz2179@nyu.edu",
+            password="ANingbo",
+            active = False,
+        )
+        cust2.save()
+        customers = Customer.find_by_active(True)
+        self.assertEqual(customers[0].last_name, "Du")
+        self.assertEqual(customers[0].user_id, "ld2342@nyu.edu")
+

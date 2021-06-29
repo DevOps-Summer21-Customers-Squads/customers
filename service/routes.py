@@ -121,9 +121,19 @@ def list_customers():
     """
     app.logger.info("Request for customer list")
     customers = []
-    #category = request.args.get("category")
-    #name = request.args.get("name")
-    customers = Customer.all()
+    first_name = request.args.get("first_name")
+    last_name = request.args.get("last_name")
+    active = request.args.get("active", 0)
+    if first_name:
+        customers = Customer.find_by_first_name(first_name)
+    elif last_name:
+        customers = Customer.find_by_last_name(last_name)
+    elif active != 0:
+        active = active in ["True", "true"]
+        customers = Customer.find_by_active(active)
+    else:
+        customers = Customer.all()
+
 
     results = [c.serialize() for c in customers]
     app.logger.info("Returning %d customers", len(results))

@@ -27,11 +27,13 @@ import logging
 import unittest
 import os
 from flask_api import status    # HTTP Status Codes
+import uuid
 from urllib.parse import quote_plus
 from unittest.mock import MagicMock, patch
 from tests.factory_test import CustomerFactory, AddressFactory
 from service.models import Customer, Address, DataValidationError, db
 from service.routes import app
+from service.error_handlers import internal_server_error
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
 BASE_URL = "/customers"
@@ -261,3 +263,40 @@ class TestCustomerServer(unittest.TestCase):
         # check the data just to be sure
         for customer in data:
             self.assertEqual(customer["active"], test_active)
+
+    def test_invalid_content_type(self):
+        """
+        <Anomaly> Create Customer with invalid content type
+        """
+        body = {
+            "first_name": "Young",
+            "last_name": "Nick",
+            "user_id": "confused",
+            "password": "lakers",
+            "address": {
+                "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            },
+            "active": True
+        }
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type='text/plain')
+        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def test_internal_server_error_500(self):
+        """
+        <Anomaly> Delete non-existent Customer
+        """
+        resp = self.app.delete('/customers/100', content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_invalid_method_request_405(self):
+        """
+        <Anomaly> Try bad request (method not allowed)
+        """
+        resp = self.app.delete('/customers', content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

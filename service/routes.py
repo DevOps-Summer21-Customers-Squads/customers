@@ -133,8 +133,6 @@ def list_customers():
         customers = Customer.find_by_active(active)
     else:
         customers = Customer.all()
-
-
     results = [c.serialize() for c in customers]
     app.logger.info("Returning %d customers", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
@@ -161,7 +159,6 @@ def update_customers(customer_id):
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
 
 
-
 ### -----------------------------------------------------------
 ### DELETE A CUSTOMER
 ### -----------------------------------------------------------
@@ -173,7 +170,8 @@ def delete_customers(customer_id):
     app.logger.info("Request to delete customer with id: %s", customer_id)
     customer = Customer.find(customer_id)
     if customer:
-        customer.delete()
+        cust = customer[0]
+        cust.delete()
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 

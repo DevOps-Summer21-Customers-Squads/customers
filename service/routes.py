@@ -30,8 +30,8 @@ Paths:
 GET /customers - Return a list of all Customers
 GET /customers/{id} - Return the Customer with a given ID number
 POST /customers - Create a new Customer record in the database
-PUT /pets/{id} - Update a Customer record in the database
-DELETE /pets/{id} - Deletes a Pet record in the database
+PUT /customers/{id} - Update a Customer record in the database
+DELETE /customers/{id} - Deletes a Pet record in the database
 """
 
 import os

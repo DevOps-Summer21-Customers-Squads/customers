@@ -30,7 +30,7 @@ Test cases can be run with:
 """
 
 import logging
-from tests.factory_test import CustomerFactory
+from tests.factory_test import CustomerFactory, AddressFactory
 import unittest
 import os
 from werkzeug.exceptions import NotFound
@@ -73,7 +73,7 @@ class TestCustomers(unittest.TestCase):
     ### -----------------------------------------------------------
     def test_create_customer(self):
         """
-        Create a Customer and check that it exists 
+        Create a Customer only
         """
         cust = Customer (
             first_name="Michael",
@@ -91,10 +91,10 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(cust.password, "password")
         self.assertEqual(cust.active, True)
         self.assertEqual(cust.address_id, "1000")
-
+    
     def test_create_address(self):
         """ 
-        Create an Address and check that it exists 
+        Create an Address only
         """
         addr = Address (
             street="W 100th St.",
@@ -113,7 +113,7 @@ class TestCustomers(unittest.TestCase):
 
     def test_add_customer_and_address(self):
         """ 
-        Create a Customer (and associated Address) and add it to the database
+        Create a Customer (and associated Address)
         """
         custs = Customer.all()
         self.assertEqual(custs, [])
@@ -169,11 +169,19 @@ class TestCustomers(unittest.TestCase):
 
     def test_delete_customer(self):
         """ 
-        Delete a Customer (and associated Address) and check non-existence in the database
+        Delete a Customer (and associated Address)
         """
-        customer = Customer(first_name="Marry", last_name="Wang", user_id="marrywang", password="password", active = True)
+        customer = Customer(first_name="Marry", 
+            last_name="Wang", 
+            user_id="marrywang", 
+            password="password", 
+            active = True)
         customer.save()
-        address = Address(street = "100 W 100 St.", apartment = "100", city = "New York", state = "New York", zip_code = "100")
+        address = Address(street = "100 W 100 St.", 
+            apartment = "100", 
+            city = "New York", 
+            state = "New York", 
+            zip_code = "100")
         address.customer_id = customer.customer_id
         address.save()
         customer.address_id = address.id
@@ -185,9 +193,19 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(len(Customer.all()), 0)
         self.assertEqual(len(Address.all()), 0)
 
+    def test_remove_all_customer(self):
+        """ 
+        Delete all Customers
+        """
+        customers = CustomerFactory.create_batch(3)
+        for customer in customers:
+            customer.save()
+        _ = Customer.remove_all()
+        self.assertEqual(len(Customer.all()), 0)
+
     def test_list_customers(self):
         """ 
-        Create two Customers and list them all
+        List all Customers
         """
         cust1 = Customer (
             first_name="Shuhong",
@@ -208,8 +226,10 @@ class TestCustomers(unittest.TestCase):
         all_customers = Customer.all()
         self.assertEquals(len(all_customers), 2)
 
-    def test_find_customer(self):
-        """Find a Customer by ID"""
+    def test_find_customer_by_id(self):
+        """
+        Find a Customer by ID
+        """
         customers = CustomerFactory.create_batch(3)
         for customer in customers:
             customer.save()
@@ -224,7 +244,9 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customer.password, customers[1].password)
         
     def test_find_by_first_name(self):
-        """Find a Customer by First Name"""
+        """
+        Find a Customer by First Name
+        """
         cust1 = Customer (
             first_name="Li",
             last_name="Du",
@@ -247,7 +269,9 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customers[0].active, True)
 
     def test_find_by_last_name(self):
-        """Find a Customer by Last Name"""
+        """
+        Find a Customer by Last Name
+        """
         cust1 = Customer (
             first_name="Li",
             last_name="Du",
@@ -270,7 +294,9 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customers[0].active, True)
 
     def test_find_by_active(self):
-        """Find a Customer by Active Status"""
+        """
+        Find a Customer by Active Status
+        """
         cust1 = Customer (
             first_name="Li",
             last_name="Du",

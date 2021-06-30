@@ -319,20 +319,13 @@ class TestCustomerServer(unittest.TestCase):
         Deactivate a customer by ID
         """
         # create a Customer to deactivate
-        test_customer = CustomerFactory()
-        resp = self.app.post(
-            "/customers", 
-            json=test_customer.serialize(), 
-            content_type="application/json"
-        )
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        original_customer = resp.get_json()
+        test_customer = self._fake_customers(1)[0]
         # make sure the original customer is active
-        self.assertEqual(original_customer["active"], True)
+        self.assertEqual(test_customer.active, True)
 
         # deactivate the customer
         resp = self.app.put(
-            "/customers/{}/deactivate".format(new_account["id"]),
+            "/customers/{}/deactivate".format(test_customer.customer_id),
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)

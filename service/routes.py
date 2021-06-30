@@ -175,6 +175,25 @@ def delete_customers(customer_id):
     app.logger.info("Customer with ID [%s] delete complete.", customer_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+### -----------------------------------------------------------
+### DEACTIVATE AN EXISTING CUSTOMERS
+### -----------------------------------------------------------
+@app.route("/customers/<int:customer_id>/deactivate", methods=["PUT"])
+def deactivate_customers(customer_id):
+    """
+    Deactivate a Customer
+    """
+    app.logger.info("Request to deactivate customer with id: %s", customer_id)
+    check_content_type("application/json")
+    customer = Customer.find(customer_id, filter_activate=False)
+    if not customer:
+        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+    customer.active = False
+    customer.customer_id = customer_id
+    customer.save()
+
+    app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
+    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### Auxiliary Utilites

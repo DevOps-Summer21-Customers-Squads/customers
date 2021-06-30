@@ -313,3 +313,28 @@ class TestCustomerServer(unittest.TestCase):
         # make sure they are deleted
         resp = self.app.get('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_deactivate_customer(self):
+        """
+        Deactivate a customer by ID
+        """
+        # create a Customer to deactivate
+        test_customer = CustomerFactory()
+        resp = self.app.post(
+            "/customers", 
+            json=test_customer.serialize(), 
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        original_customer = resp.get_json()
+        # make sure the original customer is active
+        self.assertEqual(original_customer["active"], True)
+
+        # deactivate the customer
+        resp = self.app.put(
+            "/customers/{}/deactivate".format(new_account["id"]),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        deactivated_customer = resp.get_json()
+        self.assertEqual(deactivated_customer["active"], False)

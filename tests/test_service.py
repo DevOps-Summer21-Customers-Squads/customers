@@ -315,7 +315,7 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
     
     def test_update_customer(self):
-        """Test request of update a customer"""
+        """Update a customer"""
         customer = self._fake_customers(1)[0]
 
         body = {
@@ -340,7 +340,7 @@ class TestCustomerServer(unittest.TestCase):
 
     
     def test_update_customer_with_conflict_active_status(self):
-        """Test request of update a customer with conflict active status"""
+        """Update a customer with conflict active status"""
         customer = self._fake_customers(1)[0]
 
         body = {
@@ -357,7 +357,7 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_customer_without_active_status(self):
-        """Test request of update a customer without active status"""
+        """Update a customer without active status"""
         customer = self._fake_customers(1)[0]
 
         body = {
@@ -372,3 +372,20 @@ class TestCustomerServer(unittest.TestCase):
                              json=body,
                              content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_customer_not_found(self):
+        """Update a customer that doesn't exist"""
+
+        body = {
+            "customer_id": 0,
+            "first_name": "Teng",
+            "last_name": "Zhang",
+            "user_id": "ztt",
+            "password": "zttt",
+            "active": True,
+        }
+
+        resp = self.app.put(BASE_URL+"/0",
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

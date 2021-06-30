@@ -149,10 +149,12 @@ def update_customers(customer_id):
     app.logger.info("Request to update customer with id: %s", customer_id)
     check_content_type("application/json")
     cust = Customer.find(customer_id, filter_activate=False)
-    current_active=cust.active
-    
+
     if not cust:
         raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+
+    current_active=cust.active
+
     cust.deserialize(request.get_json())
     cust.customer_id = customer_id
 

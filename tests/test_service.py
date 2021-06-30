@@ -303,7 +303,7 @@ class TestCustomerServer(unittest.TestCase):
     
     def test_delete_customer(self):
         # create a customer to delete
-        test_customer = CustomerFactory()
+        test_customer = self._fake_customers(1)[0]
 
         """ Delete a Customer """
         resp = self.app.delete('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)

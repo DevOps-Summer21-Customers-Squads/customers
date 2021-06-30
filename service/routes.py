@@ -31,7 +31,7 @@ GET /customers - Return a list of all Customers
 GET /customers/{id} - Return the Customer with a given ID number
 POST /customers - Create a new Customer record in the database
 PUT /customers/{id} - Update a Customer record in the database
-DELETE /customers/{id} - Deletes a Pet record in the database
+DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
 import os
@@ -170,8 +170,9 @@ def delete_customers(customer_id):
     app.logger.info("Request to delete customer with id: %s", customer_id)
     customer = Customer.find(customer_id)
     if customer:
-        cust = customer[0]
-        cust.delete()
+        customer.delete()
+
+    app.logger.info("Customer with ID [%s] delete complete.", customer_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 

@@ -300,3 +300,16 @@ class TestCustomerServer(unittest.TestCase):
         """
         resp = self.app.delete('/customers', content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    
+    def test_delete_customer(self):
+        # create a customer to delete
+        test_customer = CustomerFactory()
+
+        """ Delete a Customer """
+        resp = self.app.delete('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)
+
+        # make sure they are deleted
+        resp = self.app.get('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

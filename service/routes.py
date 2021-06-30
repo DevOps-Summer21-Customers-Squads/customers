@@ -39,7 +39,7 @@ import sys
 import logging
 from flask import Flask, jsonify, request, url_for, make_response, abort
 from . import status  # HTTP Status Codes
-from werkzeug.exceptions import NotFound
+from werkzeug.exceptions import NotFound,BadRequest
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
@@ -144,19 +144,28 @@ def list_customers():
 @app.route("/customers/<int:customer_id>", methods=["PUT"])
 def update_customers(customer_id):
     """
-    Update a Customer
+    Update a Customer based on customer_id and given customer data
     """
     app.logger.info("Request to update customer with id: %s", customer_id)
     check_content_type("application/json")
     cust = Customer.find(customer_id, filter_activate=False)
+    current_active=cust.active
+    
     if not cust:
-        raise NotFound("Pet with id '{}' was not found.".format(customer_id))
+        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
     cust.deserialize(request.get_json())
     cust.customer_id = customer_id
-    cust.save()
 
-    app.logger.info("Pet with ID [%s] updated.", cust.customer_id)
+    if current_active != cust.active:
+        raise BadRequest("Not allowed to change active field while updating.")
+    cust.active = current_active
+    cust.save()
+    
+    app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
+    
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
+
+
 
 
 ### -----------------------------------------------------------

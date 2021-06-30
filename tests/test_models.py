@@ -171,17 +171,17 @@ class TestCustomers(unittest.TestCase):
         """ 
         Delete a Customer (and associated Address)
         """
-        customer = Customer(first_name="Marry", 
+        customer = Customer(first_name="Joanna", 
             last_name="Wang", 
-            user_id="marrywang", 
+            user_id="joannawang", 
             password="password", 
             active = True)
         customer.save()
-        address = Address(street = "100 W 100 St.", 
-            apartment = "100", 
+        address = Address(street = "50 St. 500 Lane", 
+            apartment = "234", 
             city = "New York", 
             state = "New York", 
-            zip_code = "100")
+            zip_code = "10110")
         address.customer_id = customer.customer_id
         address.save()
         customer.address_id = address.id
@@ -192,6 +192,7 @@ class TestCustomers(unittest.TestCase):
         customer.delete()
         self.assertEqual(len(Customer.all()), 0)
         self.assertEqual(len(Address.all()), 0)
+
 
     def test_remove_all_customer(self):
         """ 
@@ -317,3 +318,54 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customers[0].last_name, "Du")
         self.assertEqual(customers[0].user_id, "ld2342@nyu.edu")
 
+    def test_delete_address(self):
+        """ 
+        Delete an Address
+        """
+        customer = CustomerFactory()
+        customer.save()
+        address = AddressFactory()
+        address.customer_id = customer.customer_id
+        address.save()
+        customer.address_id = address.id
+        customer.save()
+        self.assertEqual(len(Customer.all()), 1)
+        self.assertEqual(len(Address.all()), 1)
+
+        # delete one address and make sure it isn't in the database
+        address.delete(address.id)
+        self.assertEqual(len(Customer.all()), 1)
+        self.assertEqual(len(Address.all()), 0)
+
+    def test_remove_all_addresses(self):
+        """ Remove all addresses """
+        custs = Customer.all()
+        self.assertEqual(custs, [])
+        cust = Customer (
+            first_name="Joanna",
+            last_name="Wang",
+            user_id="joannawang",
+            password="password",
+            active = True
+        )
+        self.assertTrue(cust != None)
+        self.assertEqual(cust.customer_id, None)
+        self.assertEqual(cust.address_id, None)
+
+        cust.save()
+
+        addr = Address (
+            street="50 St. 500 Lane",
+            apartment="345",
+            city="New York",
+            state="New York",
+            zip_code="10110",
+        )
+        addr.customer_id = cust.customer_id
+        addr.save()
+        all_addresses = Address.all()
+        self.assertEquals(len(all_addresses), 1)
+
+        addr.remove_all()
+        all_addresses = Address.all()
+        self.assertEquals(len(all_addresses), 0)

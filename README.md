@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.com/DevOps-Summer21-Customers-Squads/customers.svg?branch=main)](https://travis-ci.com/DevOps-Summer21-Customers-Squads/customers)
+[![codecov](https://codecov.io/gh/DevOps-Summer21-Customers-Squads/customers/branch/main/graph/badge.svg?token=HJOTV34XKZ)](https://codecov.io/gh/DevOps-Summer21-Customers-Squads/customers)
+
+
 # DevOps-Summer21-Customers-Squads/customers
 
 ### Members: 

@@ -331,3 +331,79 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         deactivated_customer = resp.get_json()
         self.assertEqual(deactivated_customer["active"], False)
+    
+    def test_update_customer(self):
+        """Update a customer"""
+        customer = self._fake_customers(1)[0]
+
+        body = {
+            "customer_id": customer.customer_id,
+            "first_name": "Teng",
+            "last_name": "Zhang",
+            "user_id": "ztt",
+            "password": "zttt",
+            "active": True
+        }
+
+        resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+
+        updated_customer = resp.get_json()
+        self.assertEqual(updated_customer['first_name'], "Teng", "first_name do not match")
+        self.assertEqual(updated_customer['last_name'], "Zhang", "last_name do not match")
+        self.assertEqual(updated_customer['user_id'], "ztt", "user_id do not match")
+        self.assertEqual(updated_customer['password'], "zttt", "password do not match")
+
+    
+    def test_update_customer_with_conflict_active_status(self):
+        """Update a customer with conflict active status"""
+        customer = self._fake_customers(1)[0]
+
+        body = {
+            "first_name": "Teng",
+            "last_name": "Zhang",
+            "user_id": "ztt",
+            "password": "zttt",
+            "active": False,
+            "address_id": 1
+        }
+        resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_customer_without_active_status(self):
+        """Update a customer without active status"""
+        customer = self._fake_customers(1)[0]
+
+        body = {
+            "customer_id": customer.customer_id,
+            "first_name": "Teng",
+            "last_name": "Zhang",
+            "user_id": "ztt",
+            "password": "zttt"
+        }
+
+        resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_customer_not_found(self):
+        """Update a customer that doesn't exist"""
+
+        body = {
+            "customer_id": 0,
+            "first_name": "Teng",
+            "last_name": "Zhang",
+            "user_id": "ztt",
+            "password": "zttt",
+            "active": True,
+        }
+
+        resp = self.app.put(BASE_URL+"/0",
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

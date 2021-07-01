@@ -179,7 +179,7 @@ def delete_customers(customer_id):
 ### ACTIVATE AN EXISTING CUSTOMERS
 ### -----------------------------------------------------------
 @app.route("/customers/<int:customer_id>/activate", methods=["PUT"])
-def deactivate_customers(customer_id):
+def activate_customers(customer_id):
     """
     Activate a Customer
     """

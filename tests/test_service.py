@@ -318,7 +318,7 @@ class TestCustomerServer(unittest.TestCase):
         """
         Activate a customer by ID
         """
-        # create a Customer to deactivate
+        # create a Customer to activate
         test_customer = self._fake_customers(1)[0]
         test_customer.active = False
         # make sure the original customer is not active
@@ -330,5 +330,5 @@ class TestCustomerServer(unittest.TestCase):
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        deactivated_customer = resp.get_json()
-        self.assertEqual(deactivated_customer["active"], True) 
+        activated_customer = resp.get_json()
+        self.assertEqual(activated_customer["active"], True) 

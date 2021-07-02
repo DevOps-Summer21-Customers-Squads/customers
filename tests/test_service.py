@@ -314,6 +314,25 @@ class TestCustomerServer(unittest.TestCase):
         resp = self.app.get('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_activate_customer(self):
+        """
+        Activate a customer by ID
+        """
+        # create a Customer to activate
+        test_customer = self._fake_customers(1)[0]
+        test_customer.active = False
+        # make sure the original customer is not active
+        self.assertEqual(test_customer.active, False)
+
+        # activate the customer
+        resp = self.app.put(
+            "/customers/{}/activate".format(test_customer.customer_id),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        activated_customer = resp.get_json()
+        self.assertEqual(activated_customer["active"], True) 
+        
     def test_deactivate_customer(self):
         """
         Deactivate a customer by ID
@@ -330,7 +349,7 @@ class TestCustomerServer(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         deactivated_customer = resp.get_json()
-        self.assertEqual(deactivated_customer["active"], False)
+        self.assertEqual(deactivated_customer["active"], False)   
     
     def test_update_customer(self):
         """Update a customer"""

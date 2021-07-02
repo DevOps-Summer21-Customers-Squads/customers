@@ -426,3 +426,34 @@ class TestCustomerServer(unittest.TestCase):
                              json=body,
                              content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    def test_get_address(self):
+        """
+        Get an Address from a Customer by Address ID
+        """
+        body = {
+            "first_name": "Young",
+            "last_name": "Nick",
+            "user_id": "confused",
+            "password": "lakers",
+            "address": {
+                "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            },
+            "active": True
+        }
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        data = resp.get_json()
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        #self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+        customer_id = data["customer_id"]
+        address_id = data["address"]["id"]
+        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id), 
+            content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)

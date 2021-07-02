@@ -313,8 +313,6 @@ class Address(db.Model):
         """
         logger.info('Looking up Address for id %s ...', addr_id)
         this_address = cls.query.get(addr_id)
-        if this_address:
-            print(this_address)
         return this_address.serialize()
 
     @classmethod

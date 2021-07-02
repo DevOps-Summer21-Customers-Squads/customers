@@ -180,6 +180,9 @@ class Customer(db.Model):
 
     @staticmethod
     def disconnect():
+        """
+        Close the database session
+        """
         db.session.remove()
 
     @classmethod
@@ -239,6 +242,9 @@ class Customer(db.Model):
 ### CLASS Address
 ### -----------------------------------------------------------
 class Address(db.Model):
+    """
+    Class that represents an Address
+    """
 
     app = None
 

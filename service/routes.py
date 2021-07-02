@@ -72,6 +72,10 @@ def index():
 ### -----------------------------------------------------------
 @app.route("/customers", methods=["POST"])
 def create_customers():
+    """
+    Creates a Customer
+    This endpoint will create a Customer based on the data in the body that is posted
+    """
     app.logger.info("Request to create a customer")
     check_content_type("application/json")
     customer = Customer()

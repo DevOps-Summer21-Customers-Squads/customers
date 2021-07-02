@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -34,12 +34,10 @@ PUT /customers/{id} - Update a Customer record in the database
 DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
-import os
-import sys
 import logging
 from flask import Flask, jsonify, request, url_for, make_response, abort
+from werkzeug.exceptions import NotFound, BadRequest
 from . import status  # HTTP Status Codes
-from werkzeug.exceptions import NotFound,BadRequest
 
 # For this example we'll use SQLAlchemy, a popular ORM that supports a
 # variety of backends including SQLite, MySQL, and PostgreSQL
@@ -153,7 +151,7 @@ def update_customers(customer_id):
     if not cust:
         raise NotFound("Customer with id '{}' was not found.".format(customer_id))
 
-    current_active=cust.active
+    current_active = cust.active
 
     cust.deserialize(request.get_json())
     cust.customer_id = customer_id
@@ -162,9 +160,9 @@ def update_customers(customer_id):
         raise BadRequest("Not allowed to change active field while updating.")
     cust.active = current_active
     cust.save()
-    
+
     app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
-    
+
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
 
 
@@ -206,8 +204,8 @@ def activate_customers(customer_id):
 
     app.logger.info("Customer with ID [%s] activated.", customer.customer_id)
     return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
-  
-  
+
+
 ### -----------------------------------------------------------
 ### DEACTIVATE AN EXISTING CUSTOMERS
 ### -----------------------------------------------------------
@@ -226,7 +224,7 @@ def deactivate_customers(customer_id):
     customer.save()
 
     app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
-    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)  
+    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### Auxiliary Utilites

@@ -204,6 +204,22 @@ class TestCustomers(unittest.TestCase):
         _ = Customer.remove_all()
         self.assertEqual(len(Customer.all()), 0)
 
+    def test_activate_customer(self):
+        """
+        Activate a customer
+        """
+        customer = Customer (
+            first_name="Shuhong",
+            last_name="Cai",
+            user_id="sc8540@nyu.edu",
+            password="password",
+            active = False
+        )
+        customer.save()
+        self.assertEqual(customer.active, False)
+        customer.active = True
+        self.assertEqual(customer.active, True)
+
     def test_list_customers(self):
         """ 
         List all Customers

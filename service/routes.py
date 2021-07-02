@@ -186,6 +186,25 @@ def delete_customers(customer_id):
     app.logger.info("Customer with ID [%s] delete complete.", customer_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
 
+### -----------------------------------------------------------
+### ACTIVATE AN EXISTING CUSTOMERS
+### -----------------------------------------------------------
+@app.route("/customers/<int:customer_id>/activate", methods=["PUT"])
+def activate_customers(customer_id):
+    """
+    Activate a Customer
+    """
+    app.logger.info("Request to activate customer with id: %s", customer_id)
+    check_content_type("application/json")
+    customer = Customer.find(customer_id, filter_activate=False)
+    if not customer:
+        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+    customer.active = True
+    customer.customer_id = customer_id
+    customer.save()
+
+    app.logger.info("Customer with ID [%s] activated.", customer.customer_id)
+    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### Auxiliary Utilites

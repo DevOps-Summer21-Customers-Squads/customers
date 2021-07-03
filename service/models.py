@@ -120,10 +120,10 @@ class Customer(db.Model):
             self.user_id = data['user_id']
             self.password = data['password']
             self.active = data['active']
-        except KeyError as e:
-            raise DataValidationError("Invalid Customer: Data Missing\n{}".format(e))
-        except TypeError as e:
-            raise DataValidationError("Invalid Customer: Type Error\n{}".format(e))
+        except KeyError as error:
+            raise DataValidationError("Invalid Customer: Data Missing\n{}".format(error))
+        except TypeError as error:
+            raise DataValidationError("Invalid Customer: Type Error\n{}".format(error))
         return self
 
     def save(self):
@@ -131,7 +131,6 @@ class Customer(db.Model):
         Save a Customer
         """
         logger.info('Saving %s %s', self.first_name, self.last_name)
-        self.id = None # id must be none to generate next primary key
         db.session.add(self)
         db.session.commit()
         logger.info('Customer saved!')
@@ -193,8 +192,7 @@ class Customer(db.Model):
         logger.info('Processing customer lookup for user id %s ...', customer_id)
         if filter_activate:
             return cls.query.filter(cls.customer_id == customer_id and cls.active).first()
-        else:
-            return cls.query.filter(cls.customer_id == customer_id).first()
+        return cls.query.filter(cls.customer_id == customer_id).first()
 
     @classmethod
     def find_by_first_name(cls, first_name):
@@ -282,10 +280,10 @@ class Address(db.Model):
             self.city = data['city']
             self.state = data['state']
             self.zip_code = data['zip_code']
-        except KeyError as e:
-            raise DataValidationError("Invalid Customer: Data Missing\n{}".format(e))
-        except TypeError as e:
-            raise DataValidationError("Invalid Customer: Type Error\n{}".format(e))
+        except KeyError as error:
+            raise DataValidationError("Invalid Customer: Data Missing\n{}".format(error))
+        except TypeError as error:
+            raise DataValidationError("Invalid Customer: Type Error\n{}".format(error))
         return self
 
     def save(self):

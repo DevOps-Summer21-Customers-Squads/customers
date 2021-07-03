@@ -34,15 +34,10 @@ PUT /customers/{id} - Update a Customer record in the database
 DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
-import logging
-from flask import Flask, jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
 from werkzeug.exceptions import NotFound, BadRequest
+from service.models import Customer, Address
 from . import status  # HTTP Status Codes
-
-# For this example we'll use SQLAlchemy, a popular ORM that supports a
-# variety of backends including SQLite, MySQL, and PostgreSQL
-from flask_sqlalchemy import SQLAlchemy
-from service.models import Customer, Address, DataValidationError
 
 # Import Flask application
 from . import app

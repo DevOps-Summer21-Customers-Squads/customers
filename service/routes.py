@@ -240,6 +240,8 @@ def get_addresses(customer_id, address_id):
     """
     app.logger.info("Request to get an address with id: %s", address_id)
     address = Address.find(address_id)
+    if not address:
+        raise NotFound("Address with id '{}' was not found.".format(address_id))
     return make_response(jsonify(address), status.HTTP_200_OK)
 
 

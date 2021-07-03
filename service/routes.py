@@ -78,6 +78,7 @@ def create_customers():
     check_content_type("application/json")
     customer = Customer()
     customer.deserialize(request.get_json())
+    customer.customer_id = None # avoid setting customer_id, should be auto-incremented
     customer.save()
     customer_id = customer.customer_id
     address = Address()

@@ -1,7 +1,7 @@
 # DevOps-Summer21-Customers-Squads/customers
 
 ## Introduction
-This repository is a project of NYU course **CSCI-GA.2820: DevOps and Agile Methodologies** taught by John Rofrano, Adjunct Instructor, NYU Curant Institute, Graduate Division, Computer Science, in **Summer 2021** semester. 
+This repository is a project of NYU course **CSCI-GA.2820: DevOps and Agile Methodologies** taught by John Rofrano, Adjunct Instructor, NYU Courant Institute, Graduate Division, Computer Science, in **Summer 2021** semester. 
 
 This project is the back-end for an eCommerce website as a RESTful microservice for the registered customers. This microservice supports the complete Create, Read, Update, & Delete (CRUD) lifecycle calls plus List, Query, Activate, and Deactivate. 
 
@@ -22,18 +22,18 @@ Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
 ├── service
 │   ├── _init_.py          - package initializer
 │   ├── error_handlers.py  - http error codes
-│   ├── models.py          - module with main business models
+│   ├── models.py          - module with main database models
 │   ├── routes.py          - module with service routes
 │   └── status.py          - http status codes 
 ├── tests
 │   ├── _init_.py          - package initializer
 │   ├── factory_test.py    - factory to fake customer data
 │   ├── test_models.py     - test suite for models.py
-│   └── test_service.py    - test suite for service routes
+│   └── test_service.py    - test suite for routes.py
 ```
 ### Database Attributes
 
-| Fields | Type | Description | Primary Key
+| Field | Type | Description | Primary Key
 | :--- | :--- | :--- | :--- |
 | customer_id | Integer | ID (auto-incremented by database) | Yes
 | first_name | String | Customer's First Name | No

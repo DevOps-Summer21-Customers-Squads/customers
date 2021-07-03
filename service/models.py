@@ -43,8 +43,8 @@ import logging
 from flask_sqlalchemy import SQLAlchemy
 
 
-logger = logging.getLogger("flask.app")
-db = SQLAlchemy()
+logger = logging.getLogger("flask.app") # pylint: invalid-name
+db = SQLAlchemy() # pylint: invalid-name
 
 
 def init_db(app):
@@ -54,8 +54,6 @@ def init_db(app):
 
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
-    pass
-
 
 ### -----------------------------------------------------------
 ### CLASS Customer
@@ -76,7 +74,6 @@ class Customer(db.Model):
     password = db.Column(db.String(50), nullable=False)
     active = db.Column(db.Boolean, nullable=False)
     address_id = db.Column(db.Integer, nullable=True)
-
 
     ### -----------------------------------------------------------
     ### INSTANCE METHODS
@@ -295,7 +292,6 @@ class Address(db.Model):
             db.session.add(self)
         db.session.commit()
         logger.info('Address saved!')
-
 
     ### -----------------------------------------------------------
     ### CLASS METHODS

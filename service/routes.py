@@ -42,7 +42,6 @@ from . import status  # HTTP Status Codes
 # Import Flask application
 from . import app
 
-
 ### -----------------------------------------------------------
 ### GET INDEX
 ### -----------------------------------------------------------
@@ -60,7 +59,6 @@ def index():
         ),
         status.HTTP_200_OK,
     )
-
 
 ### -----------------------------------------------------------
 ### ADD A NEW CUSTOMER
@@ -134,7 +132,6 @@ def list_customers():
     app.logger.info("Returning %d customers", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
 
-
 ### -----------------------------------------------------------
 ### UPDATE AN EXISTING CUSTOMERS
 ### -----------------------------------------------------------
@@ -164,9 +161,6 @@ def update_customers(customer_id):
 
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
 
-
-
-
 ### -----------------------------------------------------------
 ### DELETE A CUSTOMER
 ### -----------------------------------------------------------
@@ -182,7 +176,6 @@ def delete_customers(customer_id):
 
     app.logger.info("Customer with ID [%s] delete complete.", customer_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
-
 
 ### -----------------------------------------------------------
 ### ACTIVATE AN EXISTING CUSTOMERS
@@ -204,7 +197,6 @@ def activate_customers(customer_id):
     app.logger.info("Customer with ID [%s] activated.", customer.customer_id)
     return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
-
 ### -----------------------------------------------------------
 ### DEACTIVATE AN EXISTING CUSTOMERS
 ### -----------------------------------------------------------
@@ -225,12 +217,11 @@ def deactivate_customers(customer_id):
     app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
     return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
-
 ### -----------------------------------------------------------
 ### RETRIEVE AN ADDRESS FROM CUSTOMER
 ### -----------------------------------------------------------
 @app.route('/customers/<int:customer_id>/addresses/<int:address_id>', methods=['GET'])
-def get_addresses(customer_id, address_id):
+def get_addresses(customer_id, address_id): # customer_id not used but kept for readbility pylint: disable=unused-argument
     """
     Get an Address
     Just an address get returned
@@ -240,7 +231,6 @@ def get_addresses(customer_id, address_id):
     if not address:
         raise NotFound("Address with id '{}' was not found.".format(address_id))
     return make_response(jsonify(address), status.HTTP_200_OK)
-
 
 ### -----------------------------------------------------------
 ### Auxiliary Utilites

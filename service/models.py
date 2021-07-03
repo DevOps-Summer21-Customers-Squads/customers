@@ -314,9 +314,7 @@ class Address(db.Model):
         Find an Address by its ID
         """
         logger.info('Looking up Address for id %s ...', addr_id)
-        this_address = cls.query.get(addr_id)
-        if this_address:
-            print(this_address)
+        this_address = cls.query.get_or_404(addr_id)
         return this_address.serialize()
 
     @classmethod

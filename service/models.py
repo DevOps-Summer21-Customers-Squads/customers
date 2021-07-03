@@ -43,8 +43,8 @@ import logging
 from flask_sqlalchemy import SQLAlchemy
 
 
-logger = logging.getLogger("flask.app") # pylint: invalid-name
-db = SQLAlchemy() # pylint: invalid-name
+logger = logging.getLogger("flask.app")
+db = SQLAlchemy()
 
 
 def init_db(app):

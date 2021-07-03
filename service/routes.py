@@ -230,7 +230,7 @@ def deactivate_customers(customer_id):
 
 
 ### -----------------------------------------------------------
-### RETRIEVE AN ADDRESS FROM ACCOUNT
+### RETRIEVE AN ADDRESS FROM CUSTOMER
 ### -----------------------------------------------------------
 @app.route('/customers/<int:customer_id>/addresses/<int:address_id>', methods=['GET'])
 def get_addresses(customer_id, address_id):

@@ -228,6 +228,23 @@ def deactivate_customers(customer_id):
     app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
     return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)  
 
+
+### -----------------------------------------------------------
+### RETRIEVE AN ADDRESS FROM CUSTOMER
+### -----------------------------------------------------------
+@app.route('/customers/<int:customer_id>/addresses/<int:address_id>', methods=['GET'])
+def get_addresses(customer_id, address_id):
+    """
+    Get an Address
+    Just an address get returned
+    """
+    app.logger.info("Request to get an address with id: %s", address_id)
+    address = Address.find(address_id)
+    if not address:
+        raise NotFound("Address with id '{}' was not found.".format(address_id))
+    return make_response(jsonify(address), status.HTTP_200_OK)
+
+
 ### -----------------------------------------------------------
 ### Auxiliary Utilites
 ### -----------------------------------------------------------

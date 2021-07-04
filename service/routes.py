@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -34,21 +34,13 @@ PUT /customers/{id} - Update a Customer record in the database
 DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
-import os
-import sys
-import logging
-from flask import Flask, jsonify, request, url_for, make_response, abort
+from flask import jsonify, request, url_for, make_response, abort
+from werkzeug.exceptions import NotFound, BadRequest
+from service.models import Customer, Address
 from . import status  # HTTP Status Codes
-from werkzeug.exceptions import NotFound,BadRequest
-
-# For this example we'll use SQLAlchemy, a popular ORM that supports a
-# variety of backends including SQLite, MySQL, and PostgreSQL
-from flask_sqlalchemy import SQLAlchemy
-from service.models import Customer, Address, DataValidationError
 
 # Import Flask application
 from . import app
-
 
 ### -----------------------------------------------------------
 ### GET INDEX
@@ -68,12 +60,15 @@ def index():
         status.HTTP_200_OK,
     )
 
-
 ### -----------------------------------------------------------
 ### ADD A NEW CUSTOMER
 ### -----------------------------------------------------------
 @app.route("/customers", methods=["POST"])
 def create_customers():
+    """
+    Creates a Customer
+    This endpoint will create a Customer based on the data in the body that is posted
+    """
     app.logger.info("Request to create a customer")
     check_content_type("application/json")
     customer = Customer()
@@ -137,7 +132,6 @@ def list_customers():
     app.logger.info("Returning %d customers", len(results))
     return make_response(jsonify(results), status.HTTP_200_OK)
 
-
 ### -----------------------------------------------------------
 ### UPDATE AN EXISTING CUSTOMERS
 ### -----------------------------------------------------------
@@ -153,7 +147,7 @@ def update_customers(customer_id):
     if not cust:
         raise NotFound("Customer with id '{}' was not found.".format(customer_id))
 
-    current_active=cust.active
+    current_active = cust.active
 
     cust.deserialize(request.get_json())
     cust.customer_id = customer_id
@@ -162,13 +156,10 @@ def update_customers(customer_id):
         raise BadRequest("Not allowed to change active field while updating.")
     cust.active = current_active
     cust.save()
-    
+
     app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
-    
+
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
-
-
-
 
 ### -----------------------------------------------------------
 ### DELETE A CUSTOMER
@@ -185,7 +176,6 @@ def delete_customers(customer_id):
 
     app.logger.info("Customer with ID [%s] delete complete.", customer_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
-
 
 ### -----------------------------------------------------------
 ### ACTIVATE AN EXISTING CUSTOMERS
@@ -206,8 +196,7 @@ def activate_customers(customer_id):
 
     app.logger.info("Customer with ID [%s] activated.", customer.customer_id)
     return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
-  
-  
+
 ### -----------------------------------------------------------
 ### DEACTIVATE AN EXISTING CUSTOMERS
 ### -----------------------------------------------------------
@@ -226,14 +215,13 @@ def deactivate_customers(customer_id):
     customer.save()
 
     app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
-    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)  
-
+    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### RETRIEVE AN ADDRESS FROM CUSTOMER
 ### -----------------------------------------------------------
 @app.route('/customers/<int:customer_id>/addresses/<int:address_id>', methods=['GET'])
-def get_addresses(customer_id, address_id):
+def get_addresses(customer_id, address_id): # customer_id not used but kept for readbility pylint: disable=unused-argument
     """
     Get an Address
     Just an address get returned
@@ -243,7 +231,6 @@ def get_addresses(customer_id, address_id):
     if not address:
         raise NotFound("Address with id '{}' was not found.".format(address_id))
     return make_response(jsonify(address), status.HTTP_200_OK)
-
 
 ### -----------------------------------------------------------
 ### Auxiliary Utilites

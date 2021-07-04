@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -39,7 +39,7 @@ app = Flask(__name__)
 app.config.from_object("config")
 
 # Import the routes After the Flask app is created
-from service import routes, models, error_handlers
+from service import routes, models, error_handlers # pylint: disable=wrong-import-position
 
 # Set up logging for production
 print("Setting up logging for {}...".format(__name__))
@@ -71,7 +71,7 @@ app.logger.info(70 * "*")
 
 try:
     models.init_db(app)  # make our sqlalchemy tables
-except Exception as error:
+except Exception as error: # pylint: disable=broad-except
     app.logger.critical("%s: Cannot continue", error)
     # gunicorn requires exit code 4 to stop spawning workers when they die
     sys.exit(4)

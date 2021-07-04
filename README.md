@@ -20,13 +20,13 @@ Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
 ## Repository Structure
 ```
 ├── service
-│   ├── _init_.py          - package initializer
+│   ├── __init__.py        - package initializer
 │   ├── error_handlers.py  - http error codes
 │   ├── models.py          - module with main database models
 │   ├── routes.py          - module with service routes
 │   └── status.py          - http status codes 
 ├── tests
-│   ├── _init_.py          - package initializer
+│   ├── __init__.py        - package initializer
 │   ├── factory_test.py    - factory to fake customer data
 │   ├── test_models.py     - test suite for models.py
 │   └── test_service.py    - test suite for routes.py
@@ -43,7 +43,7 @@ Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
 | address_id | Integer | Address ID | No
 
 
-## Run the Service On Your Local PC
+## Run the Service on Your Local PC
 
 ### Prerequisite Installations
 Download [VirtualBox](https://www.virtualbox.org/) and [Vagrant](https://www.vagrantup.com/).

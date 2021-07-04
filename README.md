@@ -77,12 +77,12 @@ $ coverage report -m
 ### Terminate the Service
 Before you leave, be reminded to terminate the service by running
 ```
-exit
-vagrant halt
+$ exit
+$ vagrant halt
 ```
 If the virtual machine is no longer needed, you can: 
 ```
-vagrant destroy
+$ vagrant destroy
 ```
 
 ## API Documentation

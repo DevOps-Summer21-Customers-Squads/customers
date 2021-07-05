@@ -14,7 +14,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -26,14 +26,13 @@
 """
 Test Factory to make fake objects for testing
 """
-
-import factory
 import uuid
-from factory.fuzzy import FuzzyChoice, FuzzyInteger, FuzzyText
+import factory
+from factory.fuzzy import FuzzyChoice, FuzzyText
 from service.models import Customer, Address
 
 class AddressFactory(factory.Factory):
-    """ 
+    """
     Create fake addresses
     """
     class Meta:

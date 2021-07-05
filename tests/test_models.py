@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -30,11 +30,10 @@ Test cases can be run with:
 """
 
 import logging
-from tests.factory_test import CustomerFactory, AddressFactory
 import unittest
 import os
-from werkzeug.exceptions import NotFound
-from service.models import Customer, Address, DataValidationError, db
+from tests.factory_test import CustomerFactory, AddressFactory
+from service.models import Customer, Address, db
 from service.routes import app
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
@@ -75,7 +74,7 @@ class TestCustomers(unittest.TestCase):
         """
         Create a Customer only
         """
-        cust = Customer (
+        cust = Customer(
             first_name="Michael",
             last_name="Jackson",
             user_id="mj",
@@ -83,7 +82,7 @@ class TestCustomers(unittest.TestCase):
             active=True,
             address_id="1000",
         )
-        self.assertTrue(cust != None)
+        self.assertTrue(cust is not None)
         self.assertEqual(cust.customer_id, None)
         self.assertEqual(cust.first_name, "Michael")
         self.assertEqual(cust.last_name, "Jackson")
@@ -91,12 +90,12 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(cust.password, "password")
         self.assertEqual(cust.active, True)
         self.assertEqual(cust.address_id, "1000")
-    
+
     def test_create_address(self):
-        """ 
+        """
         Create an Address only
         """
-        addr = Address (
+        addr = Address(
             street="W 100th St.",
             apartment="OMS",
             city="New York City",
@@ -104,7 +103,7 @@ class TestCustomers(unittest.TestCase):
             zip_code="10030",
             customer_id=1,
         )
-        self.assertTrue(addr != None)
+        self.assertTrue(addr is not None)
         self.assertEqual(addr.id, None)
         self.assertEqual(addr.street, "W 100th St.")
         self.assertEqual(addr.apartment, "OMS")
@@ -112,23 +111,23 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(addr.zip_code, "10030")
 
     def test_add_customer_and_address(self):
-        """ 
+        """
         Create a Customer (and associated Address)
         """
         custs = Customer.all()
         self.assertEqual(custs, [])
-        cust = Customer (
+        cust = Customer(
             first_name="Joanna",
             last_name="Wang",
             user_id="jwang",
             password="devops",
-            active = True
+            active=True
         )
-        self.assertTrue(cust != None)
+        self.assertTrue(cust is not None)
         self.assertEqual(cust.customer_id, None)
         self.assertEqual(cust.address_id, None)
         cust.save()
-        addr = Address (
+        addr = Address(
             street="100 W 100th St.",
             apartment="Taipei 101",
             city="Taipei",
@@ -144,19 +143,19 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(len(custs), 1)
         self.assertEqual(cust.customer_id, 1)
         custs = Customer.all()
-        self.assertEqual(len(custs), 1)        
+        self.assertEqual(len(custs), 1)
 
     def test_update_customer_password(self):
-        """ 
-        Update the Password of a Customer 
+        """
+        Update the Password of a Customer
         """
         customer = Customer(
             first_name="Joanna",
             last_name="Wang",
             user_id="jwang",
             password="devops",
-            active = True,
-            address_id = 0,
+            active=True,
+            address_id=0,
         )
         customer.save()
         self.assertEqual(customer.customer_id, 1)
@@ -168,20 +167,20 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customer[0].password, "devops is cool")
 
     def test_delete_customer(self):
-        """ 
+        """
         Delete a Customer (and associated Address)
         """
-        customer = Customer(first_name="Joanna", 
-            last_name="Wang", 
-            user_id="joannawang", 
-            password="password", 
-            active = True)
+        customer = Customer(first_name="Joanna",
+                            last_name="Wang",
+                            user_id="joannawang",
+                            password="password",
+                            active=True)
         customer.save()
-        address = Address(street = "50 St. 500 Lane", 
-            apartment = "234", 
-            city = "New York", 
-            state = "New York", 
-            zip_code = "10110")
+        address = Address(street="50 St. 500 Lane",
+                          apartment="234",
+                          city="New York",
+                          state="New York",
+                          zip_code="10110")
         address.customer_id = customer.customer_id
         address.save()
         customer.address_id = address.id
@@ -195,7 +194,7 @@ class TestCustomers(unittest.TestCase):
 
 
     def test_remove_all_customer(self):
-        """ 
+        """
         Delete all Customers
         """
         customers = CustomerFactory.create_batch(3)
@@ -203,33 +202,33 @@ class TestCustomers(unittest.TestCase):
             customer.save()
         _ = Customer.remove_all()
         self.assertEqual(len(Customer.all()), 0)
-        
+
     def test_activate_customer(self):
         """
         Activate a customer
         """
-        customer = Customer (
+        customer = Customer(
             first_name="Shuhong",
             last_name="Cai",
             user_id="sc8540@nyu.edu",
             password="password",
-            active = False
+            active=False
         )
         customer.save()
         self.assertEqual(customer.active, False)
         customer.active = True
         self.assertEqual(customer.active, True)
-        
+
     def test_deactivate_customer(self):
         """
         Deactivate a customer
         """
-        customer = Customer (
+        customer = Customer(
             first_name="Shuhong",
             last_name="Cai",
             user_id="sc8540@nyu.edu",
             password="password",
-            active = True
+            active=True
         )
         customer.save()
         self.assertEqual(customer.active, True)
@@ -237,27 +236,27 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customer.active, False)
 
     def test_list_customers(self):
-        """ 
+        """
         List all Customers
         """
-        cust1 = Customer (
+        cust1 = Customer(
             first_name="Shuhong",
             last_name="Cai",
             user_id="sc8540@nyu.edu",
             password="gmt+8",
-            active = True
+            active=True
         )
         cust1.save()
-        cust2 = Customer (
+        cust2 = Customer(
             first_name="Teng",
             last_name="Zhang",
             user_id="tz2179@nyu.edu",
             password="ANingbo",
-            active = True,
+            active=True,
         )
         cust2.save()
         all_customers = Customer.all()
-        self.assertEquals(len(all_customers), 2)
+        self.assertEqual(len(all_customers), 2)
 
     def test_find_customer_by_id(self):
         """
@@ -268,32 +267,32 @@ class TestCustomers(unittest.TestCase):
             customer.save()
         logging.debug(customers)
         # make sure they got saved
-        self.assertEquals(len(Customer.all()), 3)
+        self.assertEqual(len(Customer.all()), 3)
         # find the 2nd customer in the list
         customer = Customer.find(customers[1].customer_id)
         logging.debug(customer)
         self.assertIsNot(customer, None)
         self.assertEqual(customer.customer_id, customers[1].customer_id)
         self.assertEqual(customer.password, customers[1].password)
-        
+
     def test_find_by_first_name(self):
         """
         Find a Customer by First Name
         """
-        cust1 = Customer (
+        cust1 = Customer(
             first_name="Li",
             last_name="Du",
             user_id="ld2342@nyu.edu",
             password="gmt+8",
-            active = True
+            active=True
         )
         cust1.save()
-        cust2 = Customer (
+        cust2 = Customer(
             first_name="Teng",
             last_name="Zhang",
             user_id="tz2179@nyu.edu",
             password="ANingbo",
-            active = True,
+            active=True,
         )
         cust2.save()
         customers = Customer.find_by_first_name("Li")
@@ -305,20 +304,20 @@ class TestCustomers(unittest.TestCase):
         """
         Find a Customer by Last Name
         """
-        cust1 = Customer (
+        cust1 = Customer(
             first_name="Li",
             last_name="Du",
             user_id="ld2342@nyu.edu",
             password="gmt+8",
-            active = True
+            active=True
         )
         cust1.save()
-        cust2 = Customer (
+        cust2 = Customer(
             first_name="Teng",
             last_name="Zhang",
             user_id="tz2179@nyu.edu",
             password="ANingbo",
-            active = True,
+            active=True,
         )
         cust2.save()
         customers = Customer.find_by_last_name("Du")
@@ -330,20 +329,20 @@ class TestCustomers(unittest.TestCase):
         """
         Find a Customer by Active Status
         """
-        cust1 = Customer (
+        cust1 = Customer(
             first_name="Li",
             last_name="Du",
             user_id="ld2342@nyu.edu",
             password="gmt+8",
-            active = True
+            active=True
         )
         cust1.save()
-        cust2 = Customer (
+        cust2 = Customer(
             first_name="Teng",
             last_name="Zhang",
             user_id="tz2179@nyu.edu",
             password="ANingbo",
-            active = False,
+            active=False,
         )
         cust2.save()
         customers = Customer.find_by_active(True)
@@ -351,7 +350,7 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customers[0].user_id, "ld2342@nyu.edu")
 
     def test_delete_address(self):
-        """ 
+        """
         Delete an Address
         """
         customer = CustomerFactory()
@@ -373,20 +372,20 @@ class TestCustomers(unittest.TestCase):
         """ Remove all addresses """
         custs = Customer.all()
         self.assertEqual(custs, [])
-        cust = Customer (
+        cust = Customer(
             first_name="Joanna",
             last_name="Wang",
             user_id="joannawang",
             password="password",
-            active = True
+            active=True
         )
-        self.assertTrue(cust != None)
+        self.assertTrue(cust is not None)
         self.assertEqual(cust.customer_id, None)
         self.assertEqual(cust.address_id, None)
 
         cust.save()
 
-        addr = Address (
+        addr = Address(
             street="50 St. 500 Lane",
             apartment="345",
             city="New York",
@@ -396,8 +395,8 @@ class TestCustomers(unittest.TestCase):
         addr.customer_id = cust.customer_id
         addr.save()
         all_addresses = Address.all()
-        self.assertEquals(len(all_addresses), 1)
+        self.assertEqual(len(all_addresses), 1)
 
         addr.remove_all()
         all_addresses = Address.all()
-        self.assertEquals(len(all_addresses), 0)
+        self.assertEqual(len(all_addresses), 0)

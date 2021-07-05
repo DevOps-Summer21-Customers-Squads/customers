@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -21,4 +21,3 @@
 ###     Zhang, Ken | sz1851@nyu.edu | Shanghai | GMT+8
 ###     Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
 ### -----------------------------------------------------------
-

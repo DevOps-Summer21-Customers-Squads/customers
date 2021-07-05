@@ -129,6 +129,8 @@ $ vagrant destroy
   - last_name (String)
   - active (Boolean)
 
+  Note: If no filter condition is specified, all existing customers will be returned. 
+
 ### Update
 
 - PUT /customers/customer_id (int)

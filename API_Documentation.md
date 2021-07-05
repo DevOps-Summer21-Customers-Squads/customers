@@ -42,6 +42,8 @@
   - first_name (String)
   - last_name (String)
   - active (Boolean)
+  
+  Note: If no filter condition is specified, all existing customers will be returned. 
 
 ## Update
 

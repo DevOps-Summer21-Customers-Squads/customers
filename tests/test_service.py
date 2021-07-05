@@ -13,7 +13,7 @@
 # limitations under the License.
 
 ### -----------------------------------------------------------
-###  Modified by DevOps Course Summer 2021 Customer Team 
+###  Modified by DevOps Course Summer 2021 Customer Team
 ###  Members:
 ###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
 ###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
@@ -22,18 +22,21 @@
 ###     Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
 ### -----------------------------------------------------------
 
+"""
+Test cases for Customer Service
+Test cases can be run with:
+  nosetests
+  coverage report -m
+"""
 
 import logging
 import unittest
 import os
-from flask_api import status    # HTTP Status Codes
-import uuid
 from urllib.parse import quote_plus
-from unittest.mock import MagicMock, patch
+from flask_api import status    # HTTP Status Codes
 from tests.factory_test import CustomerFactory, AddressFactory
-from service.models import Customer, Address, DataValidationError, db
+from service.models import Customer, db
 from service.routes import app
-from service.error_handlers import internal_server_error
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
 BASE_URL = "/customers"
@@ -89,7 +92,7 @@ class TestCustomerServer(unittest.TestCase):
             test_customer.address_id = addr["id"]
             customers.append(test_customer)
         return customers
-    
+
     ### -----------------------------------------------------------
     ### Testcases:
     ### -----------------------------------------------------------
@@ -117,7 +120,7 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         # Make sure location header is set
         location = resp.headers.get('Location', None)
-        self.assertTrue(location != None)
+        self.assertTrue(location is not None)
         # Check the data is correct
         new_customer = resp.get_json()
         self.assertEqual(new_customer['first_name'], "Young", "first_name do not match")
@@ -140,7 +143,7 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_create_customer_missing_last_name(self):
-        """ 
+        """
         <Anomaly> Create Customer with Last Name missing
         """
         body = {
@@ -155,13 +158,13 @@ class TestCustomerServer(unittest.TestCase):
                 "zip_code": "100"
             }
         }
-        resp = self.app.post(BASE_URL, 
-                             json=body, 
-                            content_type=CONTENT_TYPE_JSON)
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_create_customer_missing_street(self):
-        """ 
+        """
         <Anomaly> Create Customer with Street missing
         """
         body = {
@@ -176,13 +179,13 @@ class TestCustomerServer(unittest.TestCase):
                 "zip_code": "100"
             }
         }
-        resp = self.app.post(BASE_URL, 
-                             json=body, 
-                            content_type=CONTENT_TYPE_JSON)
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_customer_not_found(self):
-        """ 
+        """
         <Anomaly> Query non-existent Customer
         """
         self._fake_customers(1)
@@ -198,7 +201,8 @@ class TestCustomerServer(unittest.TestCase):
         """
         # get the id of a customer
         test_customer = self._fake_customers(1)[0]
-        resp = self.app.get("/customers/{}".format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
+        resp = self.app.get("/customers/{}".format(test_customer.customer_id),
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(data["first_name"], test_customer.first_name)
@@ -212,14 +216,15 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
         self.assertEqual(len(data), 5)
-    
+
     def test_query_customer_list_by_first_name(self):
         """
         Query Customers by First Name
         """
         customers = self._fake_customers(10)
         test_first_name = customers[0].first_name
-        first_name_customers = [customer for customer in customers if customer.first_name == test_first_name]
+        first_name_customers = [customer for customer in customers
+                                if customer.first_name == test_first_name]
         resp = self.app.get(
             BASE_URL, query_string="first_name={}".format(quote_plus(test_first_name))
         )
@@ -236,7 +241,8 @@ class TestCustomerServer(unittest.TestCase):
         """
         customers = self._fake_customers(10)
         test_last_name = customers[0].last_name
-        last_name_customers = [customer for customer in customers if customer.last_name == test_last_name]
+        last_name_customers = [customer for customer in customers
+                               if customer.last_name == test_last_name]
         resp = self.app.get(
             BASE_URL, query_string="last_name={}".format(quote_plus(test_last_name))
         )
@@ -246,7 +252,7 @@ class TestCustomerServer(unittest.TestCase):
         # check the data just to be sure
         for customer in data:
             self.assertEqual(customer["last_name"], test_last_name)
-    
+
     def test_query_customer_list_by_active(self):
         """
         Query Customers by Active Status
@@ -300,18 +306,20 @@ class TestCustomerServer(unittest.TestCase):
         """
         resp = self.app.delete('/customers', content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-    
+
     def test_delete_customer(self):
+        """ Delete a Customer """
         # create a customer to delete
         test_customer = self._fake_customers(1)[0]
 
-        """ Delete a Customer """
-        resp = self.app.delete('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
+        resp = self.app.delete('/customers/{}'.format(test_customer.customer_id),
+                               content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)
 
         # make sure they are deleted
-        resp = self.app.get('/customers/{}'.format(test_customer.customer_id), content_type=CONTENT_TYPE_JSON)
+        resp = self.app.get('/customers/{}'.format(test_customer.customer_id),
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_activate_customer(self):
@@ -331,8 +339,8 @@ class TestCustomerServer(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         activated_customer = resp.get_json()
-        self.assertEqual(activated_customer["active"], True) 
-        
+        self.assertEqual(activated_customer["active"], True)
+
     def test_deactivate_customer(self):
         """
         Deactivate a customer by ID
@@ -349,8 +357,8 @@ class TestCustomerServer(unittest.TestCase):
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         deactivated_customer = resp.get_json()
-        self.assertEqual(deactivated_customer["active"], False)   
-    
+        self.assertEqual(deactivated_customer["active"], False)
+
     def test_update_customer(self):
         """Update a customer"""
         customer = self._fake_customers(1)[0]
@@ -365,8 +373,8 @@ class TestCustomerServer(unittest.TestCase):
         }
 
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
-                             json=body,
-                             content_type=CONTENT_TYPE_JSON)
+                            json=body,
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
         updated_customer = resp.get_json()
@@ -375,7 +383,6 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(updated_customer['user_id'], "ztt", "user_id do not match")
         self.assertEqual(updated_customer['password'], "zttt", "password do not match")
 
-    
     def test_update_customer_with_conflict_active_status(self):
         """Update a customer with conflict active status"""
         customer = self._fake_customers(1)[0]
@@ -389,8 +396,8 @@ class TestCustomerServer(unittest.TestCase):
             "address_id": 1
         }
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
-                             json=body,
-                             content_type=CONTENT_TYPE_JSON)
+                            json=body,
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_customer_without_active_status(self):
@@ -406,8 +413,8 @@ class TestCustomerServer(unittest.TestCase):
         }
 
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
-                             json=body,
-                             content_type=CONTENT_TYPE_JSON)
+                            json=body,
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_customer_not_found(self):
@@ -423,8 +430,8 @@ class TestCustomerServer(unittest.TestCase):
         }
 
         resp = self.app.put(BASE_URL+"/0",
-                             json=body,
-                             content_type=CONTENT_TYPE_JSON)
+                            json=body,
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -453,8 +460,8 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         customer_id = data["customer_id"]
         address_id = data["address"]["id"]
-        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id), 
-            content_type=CONTENT_TYPE_JSON)
+        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id),
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
 
@@ -483,6 +490,6 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
         customer_id = data["customer_id"]
         address_id = 100
-        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id), 
-            content_type=CONTENT_TYPE_JSON)
+        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id),
+                            content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)

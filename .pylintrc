@@ -1,2 +1,3 @@
 [MESSAGES CONTROL]
-disable=E1101
+disable=E1101,R0904,R0801
+min-public-methods=0

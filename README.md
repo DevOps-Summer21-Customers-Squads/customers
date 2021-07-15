@@ -1,4 +1,5 @@
 # DevOps-Summer21-Customers-Squads/customers
+[![Build Status](https://travis-ci.com/DevOps-Summer21-Customers-Squads/customers.svg?branch=main)](https://travis-ci.com/DevOps-Summer21-Customers-Squads/customers)
 
 ## Introduction
 This repository is a project of NYU course **CSCI-GA.2820: DevOps and Agile Methodologies** taught by John Rofrano, Adjunct Instructor, NYU Courant Institute, Graduate Division, Computer Science, in **Summer 2021** semester. 

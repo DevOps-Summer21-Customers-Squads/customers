@@ -1,15 +1,21 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
+### -----------------------------------------------------------
+###  Modified by DevOps Course Summer 2021 Customer Team
+###  Members:
+###     Du, Li | ld2342@nyu.edu | Nanjing | GMT+8
+###     Cai, Shuhong | sc8540@nyu.edu | Shanghai | GMT+8
+###     Zhang, Teng | tz2179@nyu.edu | Ningbo | GMT+8
+###     Zhang, Ken | sz1851@nyu.edu | Shanghai | GMT+8
+###     Wang,Yu-Hsing | yw5629@nyu.edu | Taiwan | GMT+8
+### -----------------------------------------------------------
 
-############################################################
-# NYU: CSCI-GA.2820-001 DevOps and Agile Methodologies 
-# Instructor: John Rofrano
-############################################################
 Vagrant.configure(2) do |config|
   config.vm.box = "ubuntu/focal64"
   config.vm.hostname = "ubuntu"
 
   # set up network ip and port forwarding
+  # config.vm.network "forwarded_port", guest: 8001, host: 8001, host_ip: "127.0.0.1"
   config.vm.network "forwarded_port", guest: 5000, host: 5000, host_ip: "127.0.0.1"
   config.vm.network "private_network", ip: "192.168.33.10"
 
@@ -24,7 +30,7 @@ Vagrant.configure(2) do |config|
   config.vm.provider "virtualbox" do |vb|
     # Customize the amount of memory on the VM:
     vb.memory = "1024"
-    vb.cpus = 1
+    vb.cpus = 2
     # Fixes some DNS issues on some networks
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
     vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
@@ -63,6 +69,11 @@ Vagrant.configure(2) do |config|
     config.vm.provision "file", source: "~/.vimrc", destination: "~/.vimrc"
   end
 
+  # Copy your IBM Cloud API Key if you have one
+  if File.exists?(File.expand_path("~/.bluemix/apiKey.json"))
+    config.vm.provision "file", source: "~/.bluemix/apiKey.json", destination: "~/.bluemix/apiKey.json"
+  end
+
   ############################################################
   # Create a Python 3 environment for development work
   ############################################################
@@ -77,7 +88,6 @@ Vagrant.configure(2) do |config|
     
     # Need PostgreSQL development library to compile on arm64
     apt-get install -y libpq-dev
-
     # Create a Python3 Virtual Environment and Activate it in .profile
     sudo -H -u vagrant sh -c 'python3 -m venv ~/venv'
     sudo -H -u vagrant sh -c 'echo ". ~/venv/bin/activate" >> ~/.profile'
@@ -98,15 +108,31 @@ Vagrant.configure(2) do |config|
   end
 
   ######################################################################
-  # Add a test database after Postgres is provisioned
+  # Setup a Bluemix and Kubernetes environment
   ######################################################################
   config.vm.provision "shell", inline: <<-SHELL
-    # Create testdb database using postgres cli
-    echo "Pausing for 60 seconds to allow PostgreSQL to initialize..."
-    sleep 60
-    echo "Creating test database"
-    docker exec postgres psql -c "create database testdb;" -U postgres
-    # Done
+    echo "\n************************************"
+    echo " Installing IBM Cloud CLI..."
+    echo "************************************\n"
+    # Install IBM Cloud CLI as Vagrant user
+    sudo -H -u vagrant sh -c '
+    wget -O bluemix-cli.tar.gz https://clis.cloud.ibm.com/download/bluemix-cli/1.4.0/linux64 && \
+    tar xzvf bluemix-cli.tar.gz && \
+    cd Bluemix_CLI/ && \
+    ./install && \
+    cd .. && \
+    rm -fr Bluemix_CLI/ bluemix-cli.tar.gz && \
+    ibmcloud cf install
+    '
+    # Show completion instructions
+    sudo -H -u vagrant sh -c "echo alias ic=/usr/local/bin/ibmcloud >> ~/.bash_aliases"
+    echo "\n************************************"
+    echo "If you have an IBM Cloud API key in ~/.bluemix/apiKey.json"
+    echo "You can login with the following command:"
+    echo "\n"
+    echo "ibmcloud login -a https://cloud.ibm.com --apikey @~/.bluemix/apiKey.json -r us-south"
+    echo "ibmcloud target --cf -o <your_org_here> -s dev"
+    echo "\n************************************"
   SHELL
 
 end

@@ -15,7 +15,7 @@ Vagrant.configure(2) do |config|
   config.vm.hostname = "ubuntu"
 
   # set up network ip and port forwarding
-  config.vm.network "forwarded_port", guest: 8001, host: 8001, host_ip: "127.0.0.1"
+  # config.vm.network "forwarded_port", guest: 8001, host: 8001, host_ip: "127.0.0.1"
   config.vm.network "forwarded_port", guest: 5000, host: 5000, host_ip: "127.0.0.1"
   config.vm.network "private_network", ip: "192.168.33.10"
 
@@ -133,10 +133,6 @@ Vagrant.configure(2) do |config|
     echo "ibmcloud login -a https://cloud.ibm.com --apikey @~/.bluemix/apiKey.json -r us-south"
     echo "ibmcloud target --cf -o <your_org_here> -s dev"
     echo "\n************************************"
-    # Show the GUI URL for Couch DB
-    echo "\n"
-    echo "CouchDB Admin GUI can be found at:\n"
-    echo "http://127.0.0.1:5984/_utils"    
   SHELL
 
 end

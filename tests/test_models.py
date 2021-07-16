@@ -37,6 +37,7 @@ from service.models import Customer, Address, db
 from service.routes import app
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
+#DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://????db.elephantsql.com:5432')
 
 ### -----------------------------------------------------------
 ### TESTCASE MODULE for Customer and Address

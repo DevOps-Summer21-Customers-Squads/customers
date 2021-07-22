@@ -9,7 +9,7 @@ services:
 install: "pip install -r requirements.txt"
 
 env:
-  - DATABASE_URI=postgres://postgres:@localhost:5432/test
+  - DATABASE_URI="postgres://gswncbve:1n4JGHLrb0dVst_PgDrr92DyP87RgOYu@batyr.db.elephantsql.com/gswncbve"
 
 before_script:
   - psql -c 'create database test;' -U postgres

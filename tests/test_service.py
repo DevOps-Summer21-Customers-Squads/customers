@@ -38,7 +38,7 @@ from tests.factory_test import CustomerFactory, AddressFactory
 from service.models import Customer, db
 from service.routes import app
 
-DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
+DATABASE_URI = os.getenv('DATABASE_URI', "postgres://gswncbve:1n4JGHLrb0dVst_PgDrr92DyP87RgOYu@batyr.db.elephantsql.com/gswncbve")
 BASE_URL = "/customers"
 CONTENT_TYPE_JSON = "application/json"
 

@@ -83,6 +83,7 @@ Vagrant.configure(2) do |config|
     echo "****************************************"
     # Install Python 3 and dev tools 
     apt-get update
+    apt-get install -y chromium-chromedriver
     apt-get install -y git tree wget vim python3-dev python3-pip python3-venv apt-transport-https
     apt-get upgrade python3
     

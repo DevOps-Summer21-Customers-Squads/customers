@@ -235,6 +235,18 @@ def get_addresses(customer_id, address_id): # customer_id not used but kept for 
         raise NotFound("Address with id '{}' was not found.".format(address_id))
     return make_response(jsonify(address), status.HTTP_200_OK)
 
+
+### -----------------------------------------------------------
+### FlUSH THE WHOLE CUSTOMER DATABASE
+### -----------------------------------------------------------
+@app.route('/customers/flush', methods=['DELETE'])
+def customers_reset():
+    """ Removes all customers from the database """
+    Address.remove_all()
+    Customer.remove_all()
+    return make_response('', status.HTTP_204_NO_CONTENT)
+
+
 ### -----------------------------------------------------------
 ### Auxiliary Utilites
 ### -----------------------------------------------------------

@@ -50,6 +50,7 @@ def index():
     """
     Root URL response
     """
+    """
     app.logger.info("Request for Root URL")
     return (
         jsonify(
@@ -59,6 +60,8 @@ def index():
         ),
         status.HTTP_200_OK,
     )
+    """
+    return app.send_static_file("index.html")
 
 ### -----------------------------------------------------------
 ### ADD A NEW CUSTOMER

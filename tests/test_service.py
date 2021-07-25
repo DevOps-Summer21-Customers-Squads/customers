@@ -392,13 +392,14 @@ class TestCustomerServer(unittest.TestCase):
             "last_name": "Zhang",
             "user_id": "ztt",
             "password": "zttt",
-            "active": False,
+            "active": True,
             "address_id": 1
         }
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
                             json=body,
                             content_type=CONTENT_TYPE_JSON)
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        #self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_update_customer_without_active_status(self):
         """Update a customer without active status"""
@@ -415,7 +416,8 @@ class TestCustomerServer(unittest.TestCase):
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
                             json=body,
                             content_type=CONTENT_TYPE_JSON)
-        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        #self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
 
     def test_update_customer_not_found(self):
         """Update a customer that doesn't exist"""
@@ -493,3 +495,11 @@ class TestCustomerServer(unittest.TestCase):
         resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id),
                             content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+
+    def test_flush_database(self):
+        """ Removes all Customers """
+        test_customer = self._fake_customers(1)[0]
+        resp = self.app.delete('/customers/flush', content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(resp.data), 0)

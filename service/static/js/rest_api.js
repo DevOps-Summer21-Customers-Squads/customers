@@ -246,8 +246,8 @@ $(function () {
     // Search a Customer
     // ****************************************
 
-    $("#search-btn").click(function () {
-        console.log("search-btn.click")
+    $("#retrieve-btn").click(function () {
+        console.log("retrieve-btn.click")
         var user_id = $("#user_id").val();
         var ajax = $.ajax({
             type: "GET",
@@ -257,9 +257,9 @@ $(function () {
         })
 
         ajax.done(function(res){
-            console.log("search-btn.click: res")
+            console.log("retrieve-btn.click: res")
             console.log(res)
-            update_form_data(res[0])
+            update_form_data(res)
             flash_message("Success")
         });
 
@@ -308,8 +308,8 @@ $(function () {
     // List/Query Customers
     // ****************************************
 
-    $("#retrieve-btn").click(function () {
-        console.log("retrieve-btn.click")
+    $("#search-btn").click(function () {
+        console.log("search-btn.click")
         var fname = $("#first_name").val();
         var lname = $("#last_name").val();
         var city = $("#city").val();

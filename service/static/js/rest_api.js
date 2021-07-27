@@ -310,8 +310,9 @@ $(function () {
 
     $("#search-btn").click(function () {
         console.log("search-btn.click")
-        var fname = $("#first_name").val();
-        var lname = $("#last_name").val();
+        var user_id= $("#user_id").val();
+        var first_name = $("#first_name").val();
+        var last_name = $("#last_name").val();
         var city = $("#city").val();
         var state = $("#state").val();
         var zip_code = $("#zip_code").val();
@@ -321,14 +322,21 @@ $(function () {
         var queryString = ""
 
 
-        if (fname) {
-            queryString += 'first_name=' + fname
+        if (user_id) {
+            queryString += 'user_id=' + first_name
         }
-        if (lname) {
+        if (first_name) {
             if (queryString.length > 0) {
-                queryString += '&last_name=' + lname
+                queryString += '&first_name=' + first_name
             } else {
-                queryString += 'last_name=' + lname
+                queryString += 'first_name=' + first_name
+            }
+        }
+        if (last_name) {
+            if (queryString.length > 0) {
+                queryString += '&last_name=' + last_name
+            } else {
+                queryString += 'last_name=' + last_name
             }
         }
         if (city) {

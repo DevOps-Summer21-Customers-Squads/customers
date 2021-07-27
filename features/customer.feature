@@ -26,7 +26,7 @@ Scenario: The server is running
 Scenario: List all Customers
     When I visit the Home Page
     And I press the "Clear" button
-    And I press the "Retrieve" button
+    And I press the "Search" button
     Then I should see "fn1" in the results
     And I should see "fn2" in the results
     And I should see "fn3" in the results
@@ -41,8 +41,8 @@ Scenario: Create a Customer
     And I set the "first_name" to "Ken"
     And I set the "last_name" to "Zhang"
     And I set the "password" to "zsy"
-    And I set the "street" to "steet"
     And I set the "apartment" to "apartment"
+    And I set the "street" to "steet"
     And I set the "city" to "city"
     And I set the "state" to "state"
     And I set the "zip_code" to "zip_code"
@@ -53,9 +53,20 @@ Scenario: Create a Customer
     And the "first_name" field should be empty
     And the "last_name" field should be empty
     And the "password" field should be empty
-    And the "street" field should be empty
     And the "apartment" field should be empty
+    And the "street" field should be empty
     And the "city" field should be empty
     And the "state" field should be empty
     And the "zip_code" field should be empty
 
+Scenario: Delete a Customer
+    When I visit the Home Page
+    And I set the "first_name" to "fn1"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "fn1" in the results
+    When I press the "Delete" button
+    Then I should see the message "Customer has been Deleted!"
+    When I press the "Clear" button
+    And I press the "Search" button
+    Then I should not see "fn1" in the results

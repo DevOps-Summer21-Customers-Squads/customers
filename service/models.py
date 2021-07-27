@@ -116,8 +116,7 @@ class Customer(db.Model):
             self.last_name = data['last_name']
             self.user_id = data['user_id']
             self.password = data['password']
-            #self.active = data['active']
-            self.active = True
+            self.active = data['active']
         except KeyError as error:
             raise DataValidationError("Invalid Customer: Data Missing\n{}".format(error))
         except TypeError as error:

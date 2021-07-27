@@ -13,6 +13,7 @@ $(function () {
         $("#user_id").val(res.user_id);
         $("#first_name").val(res.first_name);
         $("#last_name").val(res.last_name);
+        $("#active").val(res.active).change();
         $("#street").val(addr.street);
         $("#apartment").val(addr.apartment);
         $("#city").val(addr.city);
@@ -27,6 +28,7 @@ $(function () {
         $("#first_name").val("");
         $("#last_name").val("");
         $("#password").val("");
+        $("#active").val(true).change();
 
         $("#street").val("");
         $("#apartment").val("");
@@ -90,6 +92,7 @@ $(function () {
         var first_name = $("#first_name").val();
         var last_name = $("#last_name").val();
         var password = $("#password").val();
+        var active = $("#active").val();
 
         // get address from the ui
         var street = $("#street").val();
@@ -113,6 +116,7 @@ $(function () {
             "first_name": first_name,
             "last_name": last_name,
             "password": password,
+            "active": active,
             "address": address
         };
 
@@ -147,6 +151,7 @@ $(function () {
         var first_name = $("#first_name").val();
         var last_name = $("#last_name").val();
         var password = $("#password").val();
+        var active = $("#active").val();
 
         // get address from the ui
         var street = $("#street").val();
@@ -170,6 +175,7 @@ $(function () {
             "first_name": first_name,
             "last_name": last_name,
             "password": password,
+            "active": active,
             "address": address
         };
 
@@ -317,6 +323,7 @@ $(function () {
         var user_id= $("#user_id").val();
         var first_name = $("#first_name").val();
         var last_name = $("#last_name").val();
+        var active = $("#active").val();
         var city = $("#city").val();
         var state = $("#state").val();
         var zip_code = $("#zip_code").val();
@@ -341,6 +348,13 @@ $(function () {
                 queryString += '&last_name=' + last_name
             } else {
                 queryString += 'last_name=' + last_name
+            }
+        }
+        if (active) {
+            if (queryString.length > 0) {
+                queryString += '&active=' + active
+            } else {
+                queryString += 'active=' + active
             }
         }
         if (city) {

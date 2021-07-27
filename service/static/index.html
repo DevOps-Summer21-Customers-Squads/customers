@@ -23,7 +23,7 @@
         </div>
 
         <div class="col-md-12" id="form_data">
-          Functionality: Create | Search | Update | Deactivate/Activate | Delete
+          Functionality: Create | Retrieve | Search | Update | Deactivate/Activate | Delete
           <div class="well">
             <div class="form-horizontal">
               <div class="form-group">
@@ -58,6 +58,16 @@
                 <label class="control-label col-sm-2" for="password">Password:</label>
                 <div class="col-sm-10">
                   <input type="password" class="form-control" id="password" placeholder="Enter password">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="active">Active:</label>
+                <div class="col-sm-10">
+                  <select type="active" class="form-control" id="active">
+                    <option value=true selected>True</option>
+                    <option value=false>False</option>
+                    <option value="">Not specified</option>
+                  </select>
                 </div>
               </div>
               <div class="form-group">

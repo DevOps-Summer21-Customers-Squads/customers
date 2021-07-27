@@ -315,18 +315,20 @@ $(function () {
         var city = $("#city").val();
         var state = $("#state").val();
         var zip_code = $("#zip_code").val();
+        var apartment = $("#apartment").val();
+        var street = $("#street").val();
 
         var queryString = ""
 
 
         if (fname) {
-            queryString += 'fname=' + fname
+            queryString += 'first_name=' + fname
         }
         if (lname) {
             if (queryString.length > 0) {
-                queryString += '&lname=' + lname
+                queryString += '&last_name=' + lname
             } else {
-                queryString += 'lname=' + lname
+                queryString += 'last_name=' + lname
             }
         }
         if (city) {
@@ -348,6 +350,20 @@ $(function () {
                 queryString += '&zip_code=' + zip_code
             } else {
                 queryString += 'zip_code=' + zip_code
+            }
+        }
+        if (street) {
+            if (queryString.length > 0) {
+                queryString += '&street=' + zip_code
+            } else {
+                queryString += 'street=' + zip_code
+            }
+        }
+        if (apartment) {
+            if (queryString.length > 0) {
+                queryString += '&apartment=' + zip_code
+            } else {
+                queryString += 'apartment=' + zip_code
             }
         }
 

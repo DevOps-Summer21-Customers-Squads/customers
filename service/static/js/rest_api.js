@@ -314,23 +314,33 @@ $(function () {
 
     $("#search-btn").click(function () {
         console.log("search-btn.click")
-        var fname = $("#first_name").val();
-        var lname = $("#last_name").val();
+        var user_id= $("#user_id").val();
+        var first_name = $("#first_name").val();
+        var last_name = $("#last_name").val();
         var city = $("#city").val();
         var state = $("#state").val();
         var zip_code = $("#zip_code").val();
+        var apartment = $("#apartment").val();
+        var street = $("#street").val();
 
         var queryString = ""
 
 
-        if (fname) {
-            queryString += 'fname=' + fname
+        if (user_id) {
+            queryString += 'user_id=' + first_name
         }
-        if (lname) {
+        if (first_name) {
             if (queryString.length > 0) {
-                queryString += '&lname=' + lname
+                queryString += '&first_name=' + first_name
             } else {
-                queryString += 'lname=' + lname
+                queryString += 'first_name=' + first_name
+            }
+        }
+        if (last_name) {
+            if (queryString.length > 0) {
+                queryString += '&last_name=' + last_name
+            } else {
+                queryString += 'last_name=' + last_name
             }
         }
         if (city) {
@@ -352,6 +362,20 @@ $(function () {
                 queryString += '&zip_code=' + zip_code
             } else {
                 queryString += 'zip_code=' + zip_code
+            }
+        }
+        if (street) {
+            if (queryString.length > 0) {
+                queryString += '&street=' + zip_code
+            } else {
+                queryString += 'street=' + zip_code
+            }
+        }
+        if (apartment) {
+            if (queryString.length > 0) {
+                queryString += '&apartment=' + zip_code
+            } else {
+                queryString += 'apartment=' + zip_code
             }
         }
 

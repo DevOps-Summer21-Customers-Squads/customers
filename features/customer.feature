@@ -46,6 +46,7 @@ Scenario: Create a Customer
     And I set the "city" to "city"
     And I set the "state" to "state"
     And I set the "zip_code" to "zip_code"
+    And I select "True" in the "active" dropdown
     And I press the "Create" button
     Then I should see the message "Success"
     When I press the "Clear" button
@@ -58,6 +59,8 @@ Scenario: Create a Customer
     And the "city" field should be empty
     And the "state" field should be empty
     And the "zip_code" field should be empty
+    And the "active" field should be empty
+    
 
 Scenario: Delete a Customer
     When I visit the Home Page

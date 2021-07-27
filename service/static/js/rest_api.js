@@ -343,7 +343,7 @@ $(function () {
     var queryString = "";
 
     if (user_id) {
-      queryString += "user_id=" + first_name;
+      queryString += "user_id=" + user_id;
     }
     if (first_name) {
       if (queryString.length > 0) {

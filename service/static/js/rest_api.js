@@ -9,6 +9,7 @@ $(function () {
         // console.log("update_form_data: res try")
         // console.log(res)
         addr = res.address;
+        $("#customer_id").val(res.customer_id);
         $("#user_id").val(res.user_id);
         $("#first_name").val(res.first_name);
         $("#last_name").val(res.last_name);
@@ -21,6 +22,7 @@ $(function () {
 
     // Clears all form fields
     function clear_form_data() {
+        $("#customer_id").val();
         $("#user_id").val("");
         $("#first_name").val("");
         $("#last_name").val("");
@@ -39,13 +41,13 @@ $(function () {
         $("#flash_message").append(message);
     }
 
-    // Puts current user_id info into bottom search result table
-    function show_in_search_results_by_user_id() {
+    // Puts current customer_id info into bottom search result table
+    function show_in_search_results_by_customer_id() {
 
-        var user_id = $("#user_id").val();
+        var customer_id = $("#customer_id").val();
         var ajax = $.ajax({
             type: "GET",
-            url: "/customers/" + user_id,
+            url: "/customers/" + customer_id,
             contentType: "application/json",
             data: ''
         })
@@ -139,6 +141,8 @@ $(function () {
 
     $("#update-btn").click(function () {
 
+        var customer_id = $("#customer_id").val();
+        
         var user_id = $("#user_id").val();
         var first_name = $("#first_name").val();
         var last_name = $("#last_name").val();
@@ -171,7 +175,7 @@ $(function () {
 
         var ajax = $.ajax({
                 type: "PUT",
-                url: "/customers/" + user_id,
+                url: "/customers/" + customer_id,
                 contentType: "application/json",
                 data: JSON.stringify(data)
             })
@@ -194,11 +198,11 @@ $(function () {
 
     $("#deactivate-btn").click(function () {
 
-        var user_id = $("#user_id").val();
+        var customer_id = $("#customer_id").val();
 
         var ajax = $.ajax({
                 type: "PUT",
-                url: "/customers/" + user_id + "/deactivate",
+                url: "/customers/" + customer_id + "/deactivate",
                 contentType: "application/json"
             })
 
@@ -206,7 +210,7 @@ $(function () {
             // console.log(res)
             update_form_data(res)
             flash_message("Customer deactivated.")
-            show_in_search_results_by_user_id()
+            show_in_search_results_by_customer_id()
         });
 
         ajax.fail(function(res){
@@ -222,18 +226,18 @@ $(function () {
 
     $("#activate-btn").click(function () {
 
-        var user_id = $("#user_id").val();
+        var customer_id = $("#customer_id").val();
 
         var ajax = $.ajax({
                 type: "PUT",
-                url: "/customers/" + user_id + "/activate",
+                url: "/customers/" + customer_id + "/activate",
                 contentType: "application/json"
             })
 
         ajax.done(function(res){
             update_form_data(res)
             flash_message("Customer activated.")
-            show_in_search_results_by_user_id()
+            show_in_search_results_by_customer_id()
         });
 
         ajax.fail(function(res){
@@ -243,15 +247,15 @@ $(function () {
     });
 
     // ****************************************
-    // Search a Customer
+    // Retrieve a Customer
     // ****************************************
 
     $("#retrieve-btn").click(function () {
         console.log("retrieve-btn.click")
-        var user_id = $("#user_id").val();
+        var customer_id = $("#customer_id").val();
         var ajax = $.ajax({
             type: "GET",
-            url: "/customers/" + user_id,
+            url: "/customers/" + customer_id,
             contentType: "application/json",
             data: ''
         })
@@ -276,11 +280,11 @@ $(function () {
 
     $("#delete-btn").click(function () {
 
-        var user_id = $("#user_id").val();
+        var customer_id = $("#customer_id").val();
 
         var ajax = $.ajax({
             type: "DELETE",
-            url: "/customers/" + user_id,
+            url: "/customers/" + customer_id,
             contentType: "application/json",
             data: '',
         })
@@ -300,7 +304,7 @@ $(function () {
     // ****************************************
 
     $("#clear-btn").click(function () {
-        $("#user_id").val("");
+        $("#customer_id").val("");
         clear_form_data()
     });
 

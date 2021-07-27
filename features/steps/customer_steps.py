@@ -20,6 +20,7 @@ def step_impl(context):
     headers = {'Content-Type': 'application/json'}
     context.resp = requests.delete(context.base_url + '/customers/flush', headers=headers)
     expect(context.resp.status_code).to_equal(204)
+    
     create_url = context.base_url + '/customers'
     for row in context.table:
         data = {
@@ -27,6 +28,7 @@ def step_impl(context):
             "first_name": row['first_name'],
             "last_name": row['last_name'],
             "password": row['password'],
+            "active": row['active'] in ['True', 'true', '1'],
             "address": {
                 "street": row['street'],
                 "apartment": row['apartment'],
@@ -35,6 +37,7 @@ def step_impl(context):
                 "zip_code": row['zip_code'],
                 }
             }
+            
         payload = json.dumps(data)
         context.resp = requests.post(create_url, data=payload, headers=headers)
         expect(context.resp.status_code).to_equal(201)
@@ -64,6 +67,18 @@ def step_impl(context, element_name, text_string):
     element = context.driver.find_element_by_id(element_id)
     element.clear()
     element.send_keys(text_string)
+
+@when('I select "{text}" in the "{element_name}" dropdown')
+def step_impl(context, text, element_name):
+    element_id = element_name.lower()
+    element = Select(context.driver.find_element_by_id(element_id))
+    element.select_by_visible_text(text)
+
+@then('I should see "{text}" in the "{element_name}" dropdown')
+def step_impl(context, text, element_name):
+    element_id = element_name.lower()
+    element = Select(context.driver.find_element_by_id(element_id))
+    expect(element.first_selected_option.text).to_equal(text)
 
 
 @when('I press the "{button}" button')

@@ -17,7 +17,11 @@ $(function () {
     $("#city").val(addr.city);
     $("#state").val(addr.state);
     $("#zip_code").val(addr.zip_code);
-    $("#status").text(res.active ? "Active" : "Inactive");
+    if (res.active === true) {
+      $("#active").val("true");
+    } else {
+      $("#active").val("false");
+    }
   }
 
   // Clears all form fields
@@ -27,12 +31,12 @@ $(function () {
     $("#first_name").val("");
     $("#last_name").val("");
     $("#password").val("");
-
     $("#street").val("");
     $("#apartment").val("");
     $("#city").val("");
     $("#state").val("");
     $("#zip_code").val("");
+    $("#active").val("");
   }
 
   // Updates the flash message area
@@ -110,6 +114,7 @@ $(function () {
     var first_name = $("#first_name").val();
     var last_name = $("#last_name").val();
     var password = $("#password").val();
+    var active = $("#active").val() == "true";
 
     // get address from the ui
     var street = $("#street").val();
@@ -133,6 +138,7 @@ $(function () {
       first_name: first_name,
       last_name: last_name,
       password: password,
+      active: active,
       address: address,
     };
 
@@ -160,11 +166,11 @@ $(function () {
 
   $("#update-btn").click(function () {
     var customer_id = $("#customer_id").val();
-
     var user_id = $("#user_id").val();
     var first_name = $("#first_name").val();
     var last_name = $("#last_name").val();
     var password = $("#password").val();
+    var active = $("#active").val() == "true";
 
     // get address from the ui
     var street = $("#street").val();
@@ -189,6 +195,7 @@ $(function () {
       last_name: last_name,
       password: password,
       address: address,
+      active: active,
     };
 
     var ajax = $.ajax({
@@ -331,6 +338,7 @@ $(function () {
     var zip_code = $("#zip_code").val();
     var apartment = $("#apartment").val();
     var street = $("#street").val();
+    var active = $("#active").val();
 
     var queryString = "";
 
@@ -384,6 +392,13 @@ $(function () {
         queryString += "&apartment=" + zip_code;
       } else {
         queryString += "apartment=" + zip_code;
+      }
+    }
+    if (active) {
+      if (queryString.length > 0) {
+        queryString += "&active=" + active;
+      } else {
+        queryString += "active=" + active;
       }
     }
 

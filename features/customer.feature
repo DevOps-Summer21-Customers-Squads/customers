@@ -8,11 +8,11 @@ Feature: The customer service back-end
 
 Background: Init Customer Database
     Given the following customers
-        | user_id | first_name | last_name | password | street | apartment | city | state | zip_code |
-        |     1   |      fn1   |     ln1   |   1234   |  s1    |    a1     | c1   |  se1  |  zip1    |
-        |     2   |      fn2   |     ln2   |   4321   |  s2    |    a2     | c2   |  se2  |  zip2    |
-        |     3   |      fn3   |     ln3   |   6789   |  s3    |    a3     | c3   |  se3  |  zip3    |
-        |     4   |      fn4   |     ln4   |   9876   |  s4    |    a4     | c4   |  se3  |  zip4    |
+        | user_id | first_name | last_name | password | street | apartment | city | state | zip_code | active |
+        |     1   |      fn1   |     ln1   |   1234   |  s1    |    a1     | c1   |  se1  |  zip1    | True   |
+        |     2   |      fn2   |     ln2   |   4321   |  s2    |    a2     | c2   |  se2  |  zip2    | True   |
+        |     3   |      fn3   |     ln3   |   6789   |  s3    |    a3     | c3   |  se3  |  zip3    | False  |
+        |     4   |      fn4   |     ln4   |   9876   |  s4    |    a4     | c4   |  se3  |  zip4    | False  |
 
 
 

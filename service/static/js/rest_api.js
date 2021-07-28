@@ -40,7 +40,7 @@ $(function () {
   }
 
   // Updates the flash message area
-  function flash-message(message) {
+  function flash_message(message) {
     $("#flash-message").empty();
     $("#flash-message").append(message);
   }
@@ -102,11 +102,11 @@ $(function () {
 
     ajax.done(function (res) {
       update_form_data(res);
-      flash-message("Success");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
-      flash-message(res.responseJSON.message);
+      flash_message(res.responseJSON.message);
     });
   });
 
@@ -162,11 +162,11 @@ $(function () {
 
     ajax.done(function (res) {
       update_form_data(res);
-      flash-message("Success");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
-      flash-message(res.responseJSON.message);
+      flash_message(res.responseJSON.message);
     });
   });
 
@@ -191,11 +191,11 @@ $(function () {
     ajax.done(function (res) {
       // console.log(res)
       update_form_data(res);
-      flash-message("Customer deactivated.");
+      flash_message("Customer deactivated.");
     });
 
     ajax.fail(function (res) {
-      flash-message(res.responseJSON.message);
+      flash_message(res.responseJSON.message);
     });
   });
 
@@ -219,11 +219,11 @@ $(function () {
 
     ajax.done(function (res) {
       update_form_data(res);
-      flash-message("Customer activated.");
+      flash_message("Customer activated.");
     });
 
     ajax.fail(function (res) {
-      flash-message(res.responseJSON.message);
+      flash_message(res.responseJSON.message);
     });
   });
 
@@ -250,12 +250,12 @@ $(function () {
       console.log("retrieve-btn.click: res");
       console.log(res);
       update_form_data(res);
-      flash-message("Success");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
       clear_form_data();
-      flash-message(res.responseJSON.message);
+      flash_message(res.responseJSON.message);
     });
   });
 
@@ -280,11 +280,11 @@ $(function () {
 
     ajax.done(function (res) {
       clear_form_data();
-      flash-message("Customer has been Deleted!");
+      flash_message("Customer has been Deleted!");
     });
 
     ajax.fail(function (res) {
-      flash-message("Server error!");
+      flash_message("Server error!");
     });
   });
 
@@ -426,11 +426,11 @@ $(function () {
         clear_form_data();
       }
 
-      flash-message("Success");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
-      flash-message(res.responseJSON.message);
+      flash_message(res.responseJSON.message);
     });
   });
 });

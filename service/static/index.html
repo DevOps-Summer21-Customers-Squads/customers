@@ -28,10 +28,13 @@
             <div class="form-horizontal">
               <div class="form-group">
                 <label class="control-label col-sm-2" for="customer_id">Customer ID:</label>
-                <button type="submit" class="btn btn-info" id="retrieve-btn">Retrieve</button>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                   <input type="text" class="form-control" id="customer_id" placeholder="Enter Customer ID">
                 </div>
+                <button type="submit" class="btn btn-info" id="retrieve-btn">Retrieve</button>
+                <button type="submit" class="btn btn-warning" id="deactivate-btn">Deactivate</button>
+                <button type="submit" class="btn btn-warning" id="activate-btn">Activate</button>
+                <button type="submit" class="btn btn-danger" id="delete-btn">Delete</button>
               </div>
             </div> <!-- form div -->
 
@@ -97,9 +100,6 @@
                   <button type="submit" class="btn btn-success" id="create-btn">Create</button>
                   <button type="submit" class="btn btn-info" id="search-btn">Search</button>
                   <button type="submit" class="btn btn-warning" id="update-btn">Update</button>
-                  <button type="submit" class="btn btn-warning" id="deactivate-btn">Deactivate</button>
-                  <button type="submit" class="btn btn-warning" id="activate-btn">Activate</button>
-                  <button type="submit" class="btn btn-danger" id="delete-btn">Delete</button>
                   <button type="submit" class="btn btn-default" id="clear-btn">Clear</button>
                 </div>
               </div>
@@ -107,17 +107,20 @@
         </div>
 
         <!-- Search Results -->
-        <div class="table-responsive col-md-12" id="search_results">
-          <table class="table-striped">
+        <div class="table-responsive col-md-12" >
+          <table class="table" cellpadding="10" >
             <thead>
             <tr>
-                <th class="col-md-3">Customer ID</th>
-                <th class="col-md-2">User ID</th>
-                <th class="col-md-2">First Name</th>
-                <th class="col-md-2">Last Name</th>
-                <th class="col-md-7">Address</th>
+              <th style="width:15%">Customer ID</th>
+              <th style="width:10%">User ID</th>
+              <th style="width:15%">First Name</th>
+              <th style="width:15%">Last Name</th>
+              <th style="width:40%">Address</th>
+              <th style="width:5%">Active</th></tr>
             </tr>
             </thead>
+            <tbody id="search-results">
+            </tbody>
           </table>
         </div>
 

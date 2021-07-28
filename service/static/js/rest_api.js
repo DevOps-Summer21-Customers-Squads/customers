@@ -68,7 +68,7 @@ $(function () {
     var state = $("#state").val();
     var zip_code = $("#zip_code").val();
 
-    if (!user_id || !first_name || !last_name || !password || active=="" || !street || !apartment || !city || !state || !zip_code) {
+    if (!user_id || !first_name || !last_name || !password || active=="n/a" || !street || !apartment || !city || !state || !zip_code) {
       validation_error();
       return;
     }
@@ -129,7 +129,7 @@ $(function () {
     var state = $("#state").val();
     var zip_code = $("#zip_code").val();
 
-    if (!customer_id || !user_id || !first_name || !last_name || !password || active=="" || !street || !apartment || !city || !state || !zip_code) {
+    if (!customer_id || !user_id || !first_name || !last_name || !password || active=="n/a" || !street || !apartment || !city || !state || !zip_code) {
       validation_error();
       return;
     }
@@ -367,7 +367,7 @@ $(function () {
         queryString += "apartment=" + zip_code;
       }
     }
-    if (active) {
+    if (active != "n/a") {
       if (queryString.length > 0) {
         queryString += "&active=" + active;
       } else {

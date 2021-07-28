@@ -19,6 +19,8 @@ jobs:
       before_script:
         - psql -c 'create database test;' -U postgres
       script: nosetests
+      after_success:
+        - codecov
 
     - stage: Test
       name: BDD
@@ -36,6 +38,3 @@ jobs:
         - curl -I http://localhost:5000/  # make sure the service is up
       script:
         - behave
-
-after_success:
-  - codecov

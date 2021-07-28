@@ -149,6 +149,8 @@ def update_customers(customer_id):
     cust.active = current_active
     cust.save()
 
+    Address.update(cust.address_id, request.get_json()['address'])
+
     app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
 
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)

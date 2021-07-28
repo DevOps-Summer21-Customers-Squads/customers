@@ -369,7 +369,14 @@ class TestCustomerServer(unittest.TestCase):
             "last_name": "Zhang",
             "user_id": "ztt",
             "password": "zttt",
-            "active": True
+            "active": True,
+            "address": {
+                "apartment": "tt",
+                "city": "tt",
+                "state": "tt",
+                "street": "tt",
+                "zip_code": "tt"
+            }
         }
 
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
@@ -393,7 +400,14 @@ class TestCustomerServer(unittest.TestCase):
             "user_id": "ztt",
             "password": "zttt",
             "active": False,
-            "address_id": 1
+            "address_id": 1,
+            "address": {
+                "apartment": "tt",
+                "city": "tt",
+                "state": "tt",
+                "street": "tt",
+                "zip_code": "tt"
+            }
         }
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
                             json=body,
@@ -410,7 +424,14 @@ class TestCustomerServer(unittest.TestCase):
             "first_name": "Teng",
             "last_name": "Zhang",
             "user_id": "ztt",
-            "password": "zttt"
+            "password": "zttt",
+            "address": {
+                "apartment": "tt",
+                "city": "tt",
+                "state": "tt",
+                "street": "tt",
+                "zip_code": "tt"
+            }
         }
 
         resp = self.app.put(BASE_URL+"/"+str(customer.customer_id),
@@ -429,6 +450,13 @@ class TestCustomerServer(unittest.TestCase):
             "user_id": "ztt",
             "password": "zttt",
             "active": True,
+            "address": {
+                "apartment": "tt",
+                "city": "tt",
+                "state": "tt",
+                "street": "tt",
+                "zip_code": "tt"
+            }
         }
 
         resp = self.app.put(BASE_URL+"/0",

@@ -46,7 +46,7 @@ $(function () {
   }
 
   function validation_error() {
-    window.alert("Oops! The value in some required fields are invalid. Please modify them to run the action.");
+    window.alert("Oops! The values in some required fields are invalid. Please modify them to run the action.");
   }
 
   // ****************************************

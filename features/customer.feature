@@ -46,6 +46,40 @@ Scenario: List all Customers
     Then I should see "true" in the results
     And I should see "false" in the results   
 
+Scenario: List all Customers with first name fn1
+    When I visit the Home Page
+    And I press the "Clear" button
+    And I set the "First Name" to "fn1"
+    And I press the "Search" button
+    Then I should see "fn1" in the results
+    And I should not see "fn2" in the results
+
+Scenario: List all Customers with last name ln1
+    When I visit the Home Page
+    And I press the "Clear" button
+    And I set the "Last Name" to "ln1"
+    And I press the "Search" button
+    Then I should see "ln1" in the results
+    And I should not see "ln2" in the results
+
+Scenario: List all Customers with active status
+    When I visit the Home Page
+    And I press the "Clear" button
+    And I select "True" in the "active" dropdown
+    And I press the "Search" button
+    Then I should see "ln1" in the results
+    And I should see "ln2" in the results
+    And I should not see "ln3" in the results
+    And I should not see "ln4" in the results
+
+Scenario: List all Customers with user ID 1
+    When I visit the Home Page
+    And I press the "Clear" button
+    And I set the "User ID" to "1"
+    And I press the "Search" button
+    Then I should see "1" in the results
+    And I should see "2" in the results
+
 
 
 Scenario: Create a Customer

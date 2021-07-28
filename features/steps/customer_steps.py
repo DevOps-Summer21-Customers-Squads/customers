@@ -98,7 +98,7 @@ def step_impl(context, name):
 def step_impl(context, name):
     found = WebDriverWait(context.driver, WAIT_SECONDS).until(
         expected_conditions.text_to_be_present_in_element(
-            (By.ID, 'search_results'),
+            (By.ID, 'search-results'),
             name
         )
     )
@@ -109,7 +109,7 @@ def step_impl(context, name):
 def step_impl(context, message):
     found = WebDriverWait(context.driver, WAIT_SECONDS).until(
         expected_conditions.text_to_be_present_in_element(
-            (By.ID, 'flash_message'),
+            (By.ID, 'flash-message'),
             message
         )
     )

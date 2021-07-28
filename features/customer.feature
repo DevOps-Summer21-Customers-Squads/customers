@@ -91,3 +91,27 @@ Scenario: Delete a Customer
     When I press the "Clear" button
     And I press the "Search" button
     Then I should not see "fn1" in the results
+
+Scenario: Update a Customer
+    When I visit the Home Page
+    And I set the "first_name" to "fn2"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "fn2" in the results
+    When I set the "user_id" to "222"
+    And I set the "first_name" to "fn2_updated"
+    And I set the "last_name" to "ln2_updated"
+    And I set the "password" to "123456"
+    And I set the "apartment" to "a2_updated"
+    And I set the "street" to "s2_updated"
+    And I set the "city" to "c2_updated"
+    And I set the "state" to "se2_updated"
+    And I set the "zip_code" to "zip2_updated"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I set the "user_id" to "222"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "fn2_updated" in the results
+    And I should see "ln2_updated" in the results
+    And I should see "s2_updated, a2_updated, c2_updated, se2_updated - zip2_updated" in the results

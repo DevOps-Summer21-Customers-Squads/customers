@@ -111,6 +111,7 @@ def list_customers():
     first_name = request.args.get("first_name")
     last_name = request.args.get("last_name")
     active = request.args.get("active", 0)
+    user_id = request.args.get("user_id")
     if first_name:
         customers = Customer.find_by_first_name(first_name)
     elif last_name:
@@ -118,6 +119,8 @@ def list_customers():
     elif active != 0:
         active = active in ["True", "true"]
         customers = Customer.find_by_active(active)
+    elif user_id:
+        customers = Customer.find_by_user_id(user_id)
     else:
         customers = Customer.all()
     results = [c.serialize() for c in customers]

@@ -269,6 +269,23 @@ class TestCustomerServer(unittest.TestCase):
         # check the data just to be sure
         for customer in data:
             self.assertEqual(customer["active"], test_active)
+        
+    def test_query_customer_list_by_user_id(self):
+        """
+        Query Customers by User ID
+        """
+        customers = self._fake_customers(3)
+        test_user_id = customers[0].user_id
+        customers = [customer for customer in customers if customer.user_id == test_user_id]
+        resp = self.app.get(
+            BASE_URL, query_string="user_id={}".format(test_user_id)
+        )
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        data = resp.get_json()
+        self.assertEqual(len(data), len(customers))
+        # check the data just to be sure
+        for customer in data:
+            self.assertEqual(customer["user_id"], test_user_id)
 
     def test_invalid_content_type(self):
         """

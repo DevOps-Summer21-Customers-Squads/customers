@@ -349,6 +349,29 @@ class TestCustomers(unittest.TestCase):
         self.assertEqual(customers[0].last_name, "Du")
         self.assertEqual(customers[0].user_id, "ld2342@nyu.edu")
 
+    def test_find_by_user_id(self):
+        """
+        Find a Customer by user id
+        """
+        cust1 = Customer(
+            first_name="Li",
+            last_name="Du",
+            user_id="ld2342@nyu.edu",
+            password="gmt+8",
+            active=True
+        )
+        cust1.save()
+        cust2 = Customer(
+            first_name="Teng",
+            last_name="Zhang",
+            user_id="tz2179@nyu.edu",
+            password="ANingbo",
+            active=False,
+        )
+        cust2.save()
+        customers = Customer.find_by_user_id("ld2342@nyu.edu")
+        self.assertEqual(customers[0].last_name, "Du")
+
     def test_delete_address(self):
         """
         Delete an Address

@@ -314,6 +314,15 @@ class Address(db.Model):
         return this_address.serialize()
 
     @classmethod
+    def update(cls, addr_id, data):
+        """
+        Update an Address by its ID
+        """
+        logger.info('Update Address for id %s ...', addr_id)
+        Address.query.filter(Address.id == addr_id).update(data)
+        db.session.commit()
+
+    @classmethod
     def delete(cls, addr_id):
         """
         Remove a Address from the database

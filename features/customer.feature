@@ -19,32 +19,7 @@ Background: Init Customer Database
 Scenario: The server is running
     When I visit the Home Page
     Then I should see "Customer RESTful Service" in the title
-    And I should not see "404 Not Found"
-
-
-
-Scenario: List all Customers
-    When I visit the Home Page
-    And I press the "Clear" button
-    And I press the "Search" button
-    Then I should see "1" in the results
-    And I should see "2" in the results
-    And I should see "3" in the results
-    And I should see "4" in the results
-    Then I should see "fn1" in the results
-    And I should see "fn2" in the results
-    And I should see "fn3" in the results
-    And I should see "fn4" in the results
-    Then I should see "ln1" in the results
-    And I should see "ln2" in the results
-    And I should see "ln3" in the results
-    And I should see "ln4" in the results
-    And I should see "s1, a1, c1, se1 - zip1" in the results
-    And I should see "s2, a2, c2, se2 - zip2" in the results
-    And I should see "s3, a3, c3, se3 - zip3" in the results
-    And I should see "s4, a4, c4, se4 - zip4" in the results
-    Then I should see "true" in the results
-    And I should see "false" in the results   
+    And I should not see "404 Not Found" 
 
 
 
@@ -79,6 +54,7 @@ Scenario: Create a Customer
     And I should see "Zhang" in the results
     And I should see "street, apartment, city, state - zip_code" in the results
     And I should see "true" in the results
+
     
 
 Scenario: Activate and Deactivate a Customer
@@ -101,8 +77,54 @@ Scenario: Activate and Deactivate a Customer
     Then I should see the message "Customer activated."
     And I should see "fn1" in the "First Name" field
     And I should see "True" in the "active" dropdown
+
+
+
+Scenario: Retrieve a Customer
+    When I visit the Home Page
+    And I set the "First Name" to "fn1"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Customer ID" field
+    And I press the "Clear" button
+    And I paste the "Customer ID" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "fn1" in the "First Name" field
+    And I should see "ln1" in the "Last Name" field
+    And I should see "s1" in the "Street" field
+    And I should see "a1" in the "Apartment" field
+    And I should see "c1" in the "City" field
+    And I should see "se1" in the "State" field
+    And I should see "zip1" in the "ZIP Code" field
+    And I should see "True" in the "active" dropdown
+
+
+
+Scenario: List all Customers
+    When I visit the Home Page
+    And I press the "Clear" button
+    And I press the "Search" button
+    Then I should see "1" in the results
+    And I should see "2" in the results
+    And I should see "3" in the results
+    And I should see "4" in the results
+    Then I should see "fn1" in the results
+    And I should see "fn2" in the results
+    And I should see "fn3" in the results
+    And I should see "fn4" in the results
+    Then I should see "ln1" in the results
+    And I should see "ln2" in the results
+    And I should see "ln3" in the results
+    And I should see "ln4" in the results
+    And I should see "s1, a1, c1, se1 - zip1" in the results
+    And I should see "s2, a2, c2, se2 - zip2" in the results
+    And I should see "s3, a3, c3, se3 - zip3" in the results
+    And I should see "s4, a4, c4, se4 - zip4" in the results
+    Then I should see "true" in the results
+    And I should see "false" in the results  
     
-    
+
 
 Scenario: Delete a Customer
     When I visit the Home Page
@@ -115,6 +137,8 @@ Scenario: Delete a Customer
     When I press the "Clear" button
     And I press the "Search" button
     Then I should not see "fn1" in the results
+
+
 
 Scenario: Update a Customer
     When I visit the Home Page

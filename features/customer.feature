@@ -72,7 +72,6 @@ Scenario: Create a Customer
     And the "city" field should be empty
     And the "state" field should be empty
     And the "ZIP code" field should be empty
-    And the "active" field should be empty
     When I press the "Search" button
     Then I should see "zsy" in the results
     And I should see "Ken" in the results

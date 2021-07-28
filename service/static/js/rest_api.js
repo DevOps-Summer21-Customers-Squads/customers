@@ -36,7 +36,7 @@ $(function () {
     $("#city").val("");
     $("#state").val("");
     $("#zip_code").val("");
-    $("#active").val("");
+    $("#active").val("n/a");
   }
 
   // Updates the flash message area
@@ -293,7 +293,6 @@ $(function () {
   // ****************************************
 
   $("#clear-btn").click(function () {
-    $("#customer_id").val("");
     clear_form_data();
   });
 

@@ -36,72 +36,17 @@ $(function () {
     $("#city").val("");
     $("#state").val("");
     $("#zip_code").val("");
-    $("#active").val("");
+    $("#active").val("n/a").change();
   }
 
   // Updates the flash message area
   function flash_message(message) {
-    $("#flash_message").empty();
-    $("#flash_message").append(message);
+    $("#flash-message").empty();
+    $("#flash-message").append(message);
   }
 
-  // Puts current customer_id info into bottom search result table
-  function show_in_search_results_by_customer_id() {
-    var customer_id = $("#customer_id").val();
-    var ajax = $.ajax({
-      type: "GET",
-      url: "/customers/" + customer_id,
-      contentType: "application/json",
-      data: "",
-    });
-
-    ajax.done(function (res) {
-      $("#search_results").empty();
-      $("#search_results").append(
-        '<table class="table-striped" cellpadding="10">'
-      );
-      var header = "<tr>";
-      header += '<th style="width:5%">Customer ID</th>';
-      header += '<th style="width:10%">User ID</th>';
-      header += '<th style="width:15%">First Name</th>';
-      header += '<th style="width:15%">Last Name</th>';
-      header += '<th style="width:40%">Address</th>';
-      header += '<th style="width:15%">Active</th></tr>';
-      $("#search_results").append(header);
-      var firstCust = "";
-      for (var i = 0; i < res.length; i++) {
-        var customer = res[i];
-        var addr = customer.address;
-        var row =
-          "<tr><td>" +
-          customer.customer_id +
-          "</td><td>" +
-          customer.user_id +
-          "</td><td>" +
-          customer.first_name +
-          "</td><td>" +
-          customer.last_name +
-          "</td><td>" +
-          addr.street +
-          ", " +
-          addr.apartment +
-          ", " +
-          addr.city +
-          ", " +
-          addr.state +
-          " - " +
-          addr.zip_code +
-          "</td><td>" +
-          customer.active +
-          "</td></tr>";
-        $("#search_results").append(row);
-        if (i == 0) {
-          firstCust = customer;
-        }
-      }
-
-      $("#search_results").append("</table>");
-    });
+  function validation_error() {
+    window.alert("Oops! The values in some required fields are invalid. Please modify them to run the action.");
   }
 
   // ****************************************
@@ -122,6 +67,11 @@ $(function () {
     var city = $("#city").val();
     var state = $("#state").val();
     var zip_code = $("#zip_code").val();
+
+    if (!user_id || !first_name || !last_name || !password || active=="n/a" || !street || !apartment || !city || !state || !zip_code) {
+      validation_error();
+      return;
+    }
 
     // create address obj
     var address = {
@@ -179,6 +129,11 @@ $(function () {
     var state = $("#state").val();
     var zip_code = $("#zip_code").val();
 
+    if (!customer_id || !user_id || !first_name || !last_name || !password || active=="n/a" || !street || !apartment || !city || !state || !zip_code) {
+      validation_error();
+      return;
+    }
+
     // create address obj
     var address = {
       street: street,
@@ -222,6 +177,11 @@ $(function () {
   $("#deactivate-btn").click(function () {
     var customer_id = $("#customer_id").val();
 
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
+
     var ajax = $.ajax({
       type: "PUT",
       url: "/customers/" + customer_id + "/deactivate",
@@ -232,7 +192,6 @@ $(function () {
       // console.log(res)
       update_form_data(res);
       flash_message("Customer deactivated.");
-      show_in_search_results_by_customer_id();
     });
 
     ajax.fail(function (res) {
@@ -247,6 +206,11 @@ $(function () {
   $("#activate-btn").click(function () {
     var customer_id = $("#customer_id").val();
 
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
+
     var ajax = $.ajax({
       type: "PUT",
       url: "/customers/" + customer_id + "/activate",
@@ -256,7 +220,6 @@ $(function () {
     ajax.done(function (res) {
       update_form_data(res);
       flash_message("Customer activated.");
-      show_in_search_results_by_customer_id();
     });
 
     ajax.fail(function (res) {
@@ -269,8 +232,13 @@ $(function () {
   // ****************************************
 
   $("#retrieve-btn").click(function () {
-    console.log("retrieve-btn.click");
     var customer_id = $("#customer_id").val();
+
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
+
     var ajax = $.ajax({
       type: "GET",
       url: "/customers/" + customer_id,
@@ -297,6 +265,11 @@ $(function () {
 
   $("#delete-btn").click(function () {
     var customer_id = $("#customer_id").val();
+    
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
 
     var ajax = $.ajax({
       type: "DELETE",
@@ -320,7 +293,6 @@ $(function () {
   // ****************************************
 
   $("#clear-btn").click(function () {
-    $("#customer_id").val("");
     clear_form_data();
   });
 
@@ -394,7 +366,7 @@ $(function () {
         queryString += "apartment=" + zip_code;
       }
     }
-    if (active) {
+    if (active != "n/a") {
       if (queryString.length > 0) {
         queryString += "&active=" + active;
       } else {
@@ -413,18 +385,7 @@ $(function () {
 
     ajax.done(function (res) {
       //alert(res.toSource())
-      $("#search_results").empty();
-      $("#search_results").append(
-        '<table class="table-striped" cellpadding="10">'
-      );
-      var header = "<tr>";
-      header += '<th style="width:5%">Customer ID</th>';
-      header += '<th style="width:10%">User ID</th>';
-      header += '<th style="width:15%">First Name</th>';
-      header += '<th style="width:15%">Last Name</th>';
-      header += '<th style="width:40%">Address</th>';
-      header += '<th style="width:15%">Active</th></tr>';
-      $("#search_results").append(header);
+      $("#search-results").empty();
       var firstCust = "";
       for (var i = 0; i < res.length; i++) {
         var customer = res[i];
@@ -451,13 +412,11 @@ $(function () {
           "</td><td>" +
           customer.active +
           "</td></tr>";
-        $("#search_results").append(row);
+        $("#search-results").append(row);
         if (i == 0) {
           firstCust = customer;
         }
       }
-
-      $("#search_results").append("</table>");
 
       // copy the first result to the form
       if (firstCust != "") {

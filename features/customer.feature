@@ -58,7 +58,7 @@ Scenario: Create a Customer
     And I set the "street" to "street"
     And I set the "city" to "city"
     And I set the "state" to "state"
-    And I set the "zip_code" to "zip_code"
+    And I set the "ZIP code" to "zip_code"
     And I select "True" in the "active" dropdown
     And I press the "Create" button
     Then I should see the message "Success"
@@ -71,7 +71,7 @@ Scenario: Create a Customer
     And the "street" field should be empty
     And the "city" field should be empty
     And the "state" field should be empty
-    And the "zip_code" field should be empty
+    And the "ZIP code" field should be empty
     And the "active" field should be empty
     When I press the "Search" button
     Then I should see "zsy" in the results
@@ -115,3 +115,27 @@ Scenario: Delete a Customer
     When I press the "Clear" button
     And I press the "Search" button
     Then I should not see "fn1" in the results
+
+Scenario: Update a Customer
+    When I visit the Home Page
+    And I set the "First Name" to "fn2"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "fn2" in the results
+    When I set the "User ID" to "222"
+    And I set the "First Name" to "fn2_updated"
+    And I set the "Last Name" to "ln2_updated"
+    And I set the "password" to "123456"
+    And I set the "apartment" to "a2_updated"
+    And I set the "street" to "s2_updated"
+    And I set the "city" to "c2_updated"
+    And I set the "state" to "se2_updated"
+    And I set the "ZIP code" to "zip2_updated"
+    And I press the "Update" button
+    Then I should see the message "Success"
+    When I set the "User ID" to "222"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    And I should see "fn2_updated" in the results
+    And I should see "ln2_updated" in the results
+    And I should see "s2_updated, a2_updated, c2_updated, se2_updated - zip2_updated" in the results

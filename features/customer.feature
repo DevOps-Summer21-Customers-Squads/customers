@@ -118,13 +118,13 @@ Scenario: Delete a Customer
 
 Scenario: Update a Customer
     When I visit the Home Page
-    And I set the "First name" to "fn2"
+    And I set the "First Name" to "fn2"
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "fn2" in the results
-    When I set the "User id" to "222"
-    And I set the "First name" to "fn2_updated"
-    And I set the "Last name" to "ln2_updated"
+    When I set the "User ID" to "222"
+    And I set the "First Name" to "fn2_updated"
+    And I set the "Last Name" to "ln2_updated"
     And I set the "password" to "123456"
     And I set the "apartment" to "a2_updated"
     And I set the "street" to "s2_updated"
@@ -133,7 +133,7 @@ Scenario: Update a Customer
     And I set the "ZIP code" to "zip2_updated"
     And I press the "Update" button
     Then I should see the message "Success"
-    When I set the "User id" to "222"
+    When I set the "User ID" to "222"
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "fn2_updated" in the results

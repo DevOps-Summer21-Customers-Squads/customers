@@ -37,9 +37,9 @@ Scenario: List all Customers
 
 Scenario: Create a Customer
     When I visit the Home Page
-    And I set the "user_id" to "zsy"
-    And I set the "first_name" to "Ken"
-    And I set the "last_name" to "Zhang"
+    And I set the "User ID" to "zsy"
+    And I set the "First Name" to "Ken"
+    And I set the "Last Name" to "Zhang"
     And I set the "password" to "zsy"
     And I set the "apartment" to "apartment"
     And I set the "street" to "steet"
@@ -50,9 +50,9 @@ Scenario: Create a Customer
     And I press the "Create" button
     Then I should see the message "Success"
     When I press the "Clear" button
-    Then the "user_id" field should be empty
-    And the "first_name" field should be empty
-    And the "last_name" field should be empty
+    Then the "User ID" field should be empty
+    And the "First Name" field should be empty
+    And the "Last Name" field should be empty
     And the "password" field should be empty
     And the "apartment" field should be empty
     And the "street" field should be empty
@@ -60,11 +60,33 @@ Scenario: Create a Customer
     And the "state" field should be empty
     And the "zip_code" field should be empty
     And the "active" field should be empty
-    
+
+
+Scenario: Activate and Deactivate a Customer
+    When I visit the Home Page
+    And I set the "First Name" to "fn1"
+    And I press the "Search" button
+    Then I should see the message "Success"
+    When I copy the "Customer ID" field
+    And I press the "Clear" button
+    And I paste the "Customer ID" field
+    And I press the "Retrieve" button
+    Then I should see the message "Success"
+    And I should see "fn1" in the "First Name" field
+    And I should see "True" in the "active" dropdown
+    When I press the "Deactivate" button
+    Then I should see the message "Customer deactivated."
+    And I should see "fn1" in the "First Name" field
+    And I should see "False" in the "active" dropdown
+    When I press the "Activate" button
+    Then I should see the message "Customer activated."
+    And I should see "fn1" in the "First Name" field
+    And I should see "True" in the "active" dropdown
+
 
 Scenario: Delete a Customer
     When I visit the Home Page
-    And I set the "first_name" to "fn1"
+    And I set the "First Name" to "fn1"
     And I press the "Search" button
     Then I should see the message "Success"
     And I should see "fn1" in the results

@@ -140,7 +140,7 @@ customer_args.add_argument('zip_code', type=str, required=False, \
 
 
 ### -----------------------------------------------------------
-### Error Handler
+### Special Error Handlers
 ### -----------------------------------------------------------
 @api.errorhandler(DataValidationError)
 def request_validation_error(error):

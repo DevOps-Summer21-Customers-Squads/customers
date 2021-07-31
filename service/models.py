@@ -233,6 +233,21 @@ class Customer(db.Model):
         logger.info("Processing active status query for %s ...", active)
         return cls.query.filter(cls.active == active)
 
+    @classmethod
+    def find_by_user_id(cls, user_id):
+        """Returns all Customers with the given user id
+
+        :param name: the user id of the Customers you want to match
+        :type name: str
+
+        :return: a collection of Customers with that user_id
+        :rtype: list
+
+        """
+        logger.info("Processing user id query for %s ...", user_id)
+        return cls.query.filter(cls.user_id == user_id)
+    
+
 ### -----------------------------------------------------------
 ### CLASS Address
 ### -----------------------------------------------------------

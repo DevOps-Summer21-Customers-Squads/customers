@@ -34,13 +34,27 @@ PUT /customers/{id} - Update a Customer record in the database
 DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
-from flask import jsonify, request, url_for, make_response, abort
+import uuid
+# import logging
+# import atexit
+# from functools import wraps
+from flask import jsonify, request, make_response, abort
+from flask_restx import Api, Resource, fields, reqparse#, inputs
 from werkzeug.exceptions import NotFound, BadRequest
-from service.models import Customer, Address
+from service.models import Customer, Address, DataValidationError#, DatabaseConnectionError
 from . import status  # HTTP Status Codes
 
 # Import Flask application
 from . import app
+
+# Document the type of autorization required
+authorizations = {
+    'apikey': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'X-Api-Key'
+    }
+}
 
 ### -----------------------------------------------------------
 ### GET INDEX
@@ -53,79 +67,200 @@ def index():
     return app.send_static_file("index.html")
 
 ### -----------------------------------------------------------
-### ADD A NEW CUSTOMER
+### Configure Swagger
 ### -----------------------------------------------------------
-@app.route("/customers", methods=["POST"])
-def create_customers():
-    """
-    Creates a Customer
-    This endpoint will create a Customer based on the data in the body that is posted
-    """
-    app.logger.info("Request to create a customer")
-    check_content_type("application/json")
-    customer = Customer()
-    customer.deserialize(request.get_json())
-    customer.save()
-    customer_id = customer.customer_id
-    address = Address()
-    address.deserialize(request.get_json()['address'])
-    address.customer_id = customer_id
-    address.save()
-    customer.address_id = address.id
-    customer.save()
-    message = customer.serialize()
-    location_url = url_for("create_customers", pet_id=customer.customer_id, _external=True)
-    app.logger.info("Customer with ID [%s] created.", customer.customer_id)
-    return make_response(
-        jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+api = Api(app,
+          version='1.0.0',
+          title='Customer REST API Service',
+          description='This is Customer server.',
+          default='customers',
+          default_label='Customer operations',
+          doc='/apidocs',
+
+          authorizations=authorizations
+         )
+
+# Define the model so that the docs reflect what can be sent
+customer_model = api.model('Customer', {
+    'customer_id': fields.String(required=True, \
+        description='The system-generated unique Customer ID'),
+    'user_id': fields.String(required=True, description='The unique User ID given by Customer'),
+    'first_name': fields.String(required=True, description='The first name of the Customer'),
+    'last_name': fields.String(required=True, description='The last name of the Customer'),
+    'password': fields.String(required=True, description='Password'),
+    'active': fields.Boolean(required=True, description='Active status'),
+    'address': fields.Nested(
+        api.model('Address', {
+            'id': fields.String(required=True, \
+                description='The system-generated unique Address ID'),
+            'street': fields.String(required=True, description='Street'),
+            'apartment': fields.String(required=True, description='Apartment'),
+            'city': fields.String(required=True, description='City'),
+            'state': fields.String(required=True, description='State'),
+            'zip_code': fields.String(required=True, description='Zip Code')
+        }),
+        description='Address of the Customer'
     )
+})
+
+create_model = api.model('Customer', {
+    'user_id': fields.String(required=True, description='The unique User ID given by Customer'),
+    'first_name': fields.String(required=True, description='The first name of the Customer'),
+    'last_name': fields.String(required=True, description='The last name of the Customer'),
+    'password': fields.String(required=True, description='Password'),
+    'active': fields.Boolean(required=True, description='Active status'),
+    'address': fields.Nested(
+        api.model('Address', {
+            'street': fields.String(required=True, description='Street'),
+            'apartment': fields.String(required=True, description='Apartment'),
+            'city': fields.String(required=True, description='City'),
+            'state': fields.String(required=True, description='State'),
+            'zip_code': fields.String(required=True, description='Zip Code')
+        }),
+        description='Address of the customer'
+    )
+})
+
+# query string
+customer_args = reqparse.RequestParser()
+customer_args.add_argument('user_id', type=str, required=False, \
+    location='args', help='List Customers by their User ID')
+customer_args.add_argument('first_name', type=str, required=False, \
+    location='args', help='List Customers by their first name')
+customer_args.add_argument('last_name', type=str, required=False, \
+    location='args', help='List Customers by their last name')
+customer_args.add_argument('active', type=str, required=False, \
+    location='args', help='List Customers by its active status')
+customer_args.add_argument('city', type=str, required=False, \
+    location='args', help='List Customers by the city in their addresses')
+customer_args.add_argument('state', type=str, required=False, \
+    location='args', help='List Customers by the state in their addresses')
+customer_args.add_argument('zip_code', type=str, required=False, \
+    location='args', help='List Customers by zip code in their addresses')
+
 
 ### -----------------------------------------------------------
-### RETRIEVE A Customer
+### Special Error Handlers
 ### -----------------------------------------------------------
-@app.route("/customers/<int:customer_id>", methods=["GET"])
-def get_customers(customer_id):
-    """
-    Retrieve a single Customer
+@api.errorhandler(DataValidationError)
+def request_validation_error(error):
+    """ Handles Value Errors from bad data """
+    message = str(error)
+    app.logger.warning(message)
+    return {
+        'status_code': status.HTTP_400_BAD_REQUEST,
+        'error': 'Bad Request',
+        'message': message
+    }, status.HTTP_400_BAD_REQUEST
 
-    This endpoint will return a Customer based on it's id
-    """
-    app.logger.info("Request for customer with id: %s", customer_id)
-    customer = Customer.find(customer_id)
-    if not customer:
-        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+@app.errorhandler(status.HTTP_500_INTERNAL_SERVER_ERROR)
+def internal_server_error(error):
+    """ Handles unexpected server error with 500_SERVER_ERROR """
+    message = str(error)
+    app.logger.error(message)
+    return jsonify(status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                   error='Internal Server Error',
+                   message=message), status.HTTP_500_INTERNAL_SERVER_ERROR
 
-    app.logger.info("Returning customer: %s", customer.customer_id)
-    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
-### LIST ALL CUSTOMERS
+### Generate a random API key
 ### -----------------------------------------------------------
-@app.route("/customers", methods=["GET"])
-def list_customers():
+def generate_apikey():
+    """ Helper function used when testing API keys """
+    return uuid.uuid4().hex
+
+
+@api.route('/customers', strict_slashes=False)
+class CustomerCollection(Resource):
     """
-    Returns all of the Customers
+    Handles all interactions with Resource of Customers
     """
-    app.logger.info("Request for customer list")
-    customers = []
-    first_name = request.args.get("first_name")
-    last_name = request.args.get("last_name")
-    active = request.args.get("active", 0)
-    user_id = request.args.get("user_id")
-    if first_name:
-        customers = Customer.find_by_first_name(first_name)
-    elif last_name:
-        customers = Customer.find_by_last_name(last_name)
-    elif active != 0:
-        active = active in ["True", "true"]
-        customers = Customer.find_by_active(active)
-    elif user_id:
-        customers = Customer.find_by_user_id(user_id)
-    else:
-        customers = Customer.all()
-    results = [c.serialize() for c in customers]
-    app.logger.info("Returning %d customers", len(results))
-    return make_response(jsonify(results), status.HTTP_200_OK)
+    ### -----------------------------------------------------------
+    ### ADD A NEW CUSTOMER
+    ### -----------------------------------------------------------
+    @api.doc('create_customers', security='apikey')
+    @api.expect(create_model)
+    @api.response(400, 'The posted data was not valid')
+    @api.response(201, 'Customer created successfully')
+    @api.marshal_with(customer_model, code=201)
+    def post(self):
+        """
+        Creates a Customer
+        This endpoint will create a Customer based on the data in the body that is posted
+        """
+        app.logger.info("Request to create a customer")
+        check_content_type("application/json")
+        customer = Customer()
+        customer.deserialize(request.get_json())
+        customer.save()
+        customer_id = customer.customer_id
+        address = Address()
+        address.deserialize(request.get_json()['address'])
+        address.customer_id = customer_id
+        address.save()
+        customer.address_id = address.id
+        customer.save()
+        message = customer.serialize()
+        location_url = api.url_for(CustomerResource, \
+            customer_id=customer.customer_id, _external=True)
+        app.logger.info("Customer with ID [%s] created.", customer.customer_id)
+        return message, status.HTTP_201_CREATED, {"Location": location_url}
+
+    ### -----------------------------------------------------------
+    ### LIST ALL CUSTOMERS
+    ### -----------------------------------------------------------
+    @api.doc('list_customers')
+    @api.expect(customer_args, validate=True)
+    def get(self):
+        """
+        Return all of the Customers that satisfy query constraints
+        """
+        app.logger.info("Request for customer list")
+        customers = []
+        args = customer_args.parse_args()
+        if args['first_name']:
+            customers = Customer.find_by_first_name(args['first_name'])
+        elif args['last_name']:
+            customers = Customer.find_by_last_name(args['last_name'])
+        elif args['active']:
+            active = args['active'] in ["True", "true"]
+            customers = Customer.find_by_active(active)
+        elif args['user_id']:
+            customers = Customer.find_by_user_id(args['user_id'])
+        else:
+            customers = Customer.all()
+        results = [c.serialize() for c in customers]
+        app.logger.info("Returning %d customers", len(results))
+        return results, status.HTTP_200_OK
+
+
+@api.route('/customers/<int:customer_id>')
+@api.param('customer_id', 'The User identifier')
+class CustomerResource(Resource):
+    """
+    Handles all manipulation of a single Customer
+    GET /cutsomer{id} - Returns a Customer with the id
+    """
+    ### -----------------------------------------------------------
+    ### RETRIEVE A Customer
+    ### -----------------------------------------------------------
+    @api.doc('get_customers')
+    @api.response(404, 'Customer not found')
+    @api.marshal_with(customer_model)
+    def get(self, customer_id):
+        """
+        Retrieve a single Customer
+        This endpoint will return a Customer based on it's id
+        """
+        app.logger.info("Request for customer with id: %s", customer_id)
+        customer = Customer.find(customer_id)
+        if not customer:
+            raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+
+        app.logger.info("Returning customer: %s", customer.customer_id)
+        return customer.serialize(), status.HTTP_200_OK
+
 
 ### -----------------------------------------------------------
 ### UPDATE AN EXISTING CUSTOMERS
@@ -148,7 +283,8 @@ def update_customers(customer_id):
     cust.customer_id = customer_id
 
     if current_active != cust.active:
-        raise BadRequest("Not allowed to change active field while updating, please use Activate/Deactivate button.")
+        raise BadRequest("Not allowed to change active field while updating, \
+            please use Activate/Deactivate button.")
     cust.active = current_active
     cust.save()
 

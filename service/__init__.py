@@ -45,7 +45,6 @@ from service import routes, models, error_handlers # pylint: disable=wrong-impor
 print("Setting up logging for {}...".format(__name__))
 app.logger.propagate = False
 app.url_map.strict_slashes = False
-app.config['SECRET_KEY'] = 'secret-for-customer-team'
 app.config['LOGGING_LEVEL'] = logging.INFO
 app.config['API_KEY'] = os.getenv('API_KEY')
 

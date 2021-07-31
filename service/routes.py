@@ -235,7 +235,7 @@ class CustomerCollection(Resource):
         return results, status.HTTP_200_OK
 
 
-@api.route('/customers/<customer_id>')
+@api.route('/customers/<int:customer_id>')
 @api.param('customer_id', 'The User identifier')
 class CustomerResource(Resource):
     """

@@ -234,7 +234,6 @@ class CustomerResource(Resource):
     Handles all manipulation of a single Customer
     GET /cutsomer{id} - Returns a Customer with the id
     """
-    pass
     ### -----------------------------------------------------------
     ### RETRIEVE A Customer
     ### -----------------------------------------------------------

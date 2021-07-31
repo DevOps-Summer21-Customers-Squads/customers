@@ -239,8 +239,7 @@ class CustomerCollection(Resource):
 @api.param('customer_id', 'The User identifier')
 class CustomerResource(Resource):
     """
-    Handles all manipulation of a single Customer
-    GET /cutsomer{id} - Returns a Customer with the id
+    Handles CRUD operations of a single Customer
     """
     ### -----------------------------------------------------------
     ### RETRIEVE A Customer
@@ -259,6 +258,66 @@ class CustomerResource(Resource):
             raise NotFound("Customer with id '{}' was not found.".format(customer_id))
 
         app.logger.info("Returning customer: %s", customer.customer_id)
+        return customer.serialize(), status.HTTP_200_OK
+
+
+### -----------------------------------------------------------
+### ACTIVATE AN EXISTING CUSTOMERS
+### -----------------------------------------------------------
+@api.route('/customers/<int:customer_id>/activate')
+@api.param('customer_id', 'The User identifier')
+class ActivateResource(Resource):
+    """
+    Handles the operation of activating a Customer
+    """
+    @api.doc('activate_customers')
+    @api.response(404, 'Customer not found')
+    @api.marshal_with(customer_model)
+    def put(self, customer_id):
+        """
+        Activate a single Customer
+        This endpoint will return a Customer based on it's id
+        """
+        app.logger.info("Request to activate customer with id: %s", customer_id)
+        check_content_type("application/json")
+        customer = Customer.find(customer_id, filter_activate=False)
+        if not customer:
+            raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+        customer.active = True
+        customer.customer_id = customer_id
+        customer.save()
+
+        app.logger.info("Customer with ID [%s] activated.", customer.customer_id)
+        return customer.serialize(), status.HTTP_200_OK
+
+
+### -----------------------------------------------------------
+### DEACTIVATE AN EXISTING CUSTOMERS
+### -----------------------------------------------------------
+@api.route('/customers/<int:customer_id>/deactivate')
+@api.param('customer_id', 'The User identifier')
+class DeactivateResource(Resource):
+    """
+    Handles the operation of deactivating a Customer
+    """
+    @api.doc('deactivate_customers')
+    @api.response(404, 'Customer not found')
+    @api.marshal_with(customer_model)
+    def put(self, customer_id):
+        """
+        Deactivate a single Customer
+        This endpoint will return a Customer based on it's id
+        """
+        app.logger.info("Request to deactivate customer with id: %s", customer_id)
+        check_content_type("application/json")
+        customer = Customer.find(customer_id, filter_activate=False)
+        if not customer:
+            raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+        customer.active = False
+        customer.customer_id = customer_id
+        customer.save()
+
+        app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
         return customer.serialize(), status.HTTP_200_OK
 
 
@@ -309,46 +368,6 @@ def delete_customers(customer_id):
 
     app.logger.info("Customer with ID [%s] delete complete.", customer_id)
     return make_response("", status.HTTP_204_NO_CONTENT)
-
-### -----------------------------------------------------------
-### ACTIVATE AN EXISTING CUSTOMERS
-### -----------------------------------------------------------
-@app.route("/customers/<int:customer_id>/activate", methods=["PUT"])
-def activate_customers(customer_id):
-    """
-    Activate a Customer
-    """
-    app.logger.info("Request to activate customer with id: %s", customer_id)
-    check_content_type("application/json")
-    customer = Customer.find(customer_id, filter_activate=False)
-    if not customer:
-        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
-    customer.active = True
-    customer.customer_id = customer_id
-    customer.save()
-
-    app.logger.info("Customer with ID [%s] activated.", customer.customer_id)
-    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
-
-### -----------------------------------------------------------
-### DEACTIVATE AN EXISTING CUSTOMERS
-### -----------------------------------------------------------
-@app.route("/customers/<int:customer_id>/deactivate", methods=["PUT"])
-def deactivate_customers(customer_id):
-    """
-    Deactivate a Customer
-    """
-    app.logger.info("Request to deactivate customer with id: %s", customer_id)
-    check_content_type("application/json")
-    customer = Customer.find(customer_id, filter_activate=False)
-    if not customer:
-        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
-    customer.active = False
-    customer.customer_id = customer_id
-    customer.save()
-
-    app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
-    return make_response(jsonify(customer.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### RETRIEVE AN ADDRESS FROM CUSTOMER

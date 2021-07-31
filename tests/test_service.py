@@ -269,7 +269,7 @@ class TestCustomerServer(unittest.TestCase):
         # check the data just to be sure
         for customer in data:
             self.assertEqual(customer["active"], test_active)
-        
+
     def test_query_customer_list_by_user_id(self):
         """
         Query Customers by User ID
@@ -546,7 +546,6 @@ class TestCustomerServer(unittest.TestCase):
 
     def test_flush_database(self):
         """ Removes all Customers """
-        test_customer = self._fake_customers(1)[0]
         resp = self.app.delete('/customers/flush', content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)

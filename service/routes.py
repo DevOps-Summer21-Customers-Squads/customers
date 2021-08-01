@@ -72,7 +72,7 @@ def index():
 api = Api(app,
           version='1.0.0',
           title='Customer REST API Service',
-          description='This is Customer server.',
+          description='This is the Customer server.',
           default='customers',
           default_label='Customer operations',
           doc='/apidocs',
@@ -81,44 +81,33 @@ api = Api(app,
          )
 
 # Define the model so that the docs reflect what can be sent
-customer_model = api.model('Customer', {
-    'customer_id': fields.String(required=True, \
-        description='The system-generated unique Customer ID'),
-    'user_id': fields.String(required=True, description='The unique User ID given by Customer'),
-    'first_name': fields.String(required=True, description='The first name of the Customer'),
-    'last_name': fields.String(required=True, description='The last name of the Customer'),
-    'password': fields.String(required=True, description='Password'),
-    'active': fields.Boolean(required=True, description='Active status'),
-    'address': fields.Nested(
-        api.model('Address', {
-            'id': fields.String(required=True, \
-                description='The system-generated unique Address ID'),
-            'street': fields.String(required=True, description='Street'),
-            'apartment': fields.String(required=True, description='Apartment'),
-            'city': fields.String(required=True, description='City'),
-            'state': fields.String(required=True, description='State'),
-            'zip_code': fields.String(required=True, description='Zip Code')
-        }),
-        description='Address of the Customer'
-    )
+create_address_model = api.model('Address', {
+    'street': fields.String(required=True, description='Street'),
+    'apartment': fields.String(required=True, description='Apartment'),
+    'city': fields.String(required=True, description='City'),
+    'state': fields.String(required=True, description='State'),
+    'zip_code': fields.String(required=True, description='Zip Code')
 })
 
-create_model = api.model('Customer', {
-    'user_id': fields.String(required=True, description='The unique User ID given by Customer'),
+base_customer_model = api.model('BaseCustomerModel', {
+    'user_id': fields.String(required=True, description='The unique User ID given by the Customer'),
     'first_name': fields.String(required=True, description='The first name of the Customer'),
     'last_name': fields.String(required=True, description='The last name of the Customer'),
     'password': fields.String(required=True, description='Password'),
-    'active': fields.Boolean(required=True, description='Active status'),
-    'address': fields.Nested(
-        api.model('Address', {
-            'street': fields.String(required=True, description='Street'),
-            'apartment': fields.String(required=True, description='Apartment'),
-            'city': fields.String(required=True, description='City'),
-            'state': fields.String(required=True, description='State'),
-            'zip_code': fields.String(required=True, description='Zip Code')
-        }),
-        description='Address of the customer'
-    )
+    'active': fields.Boolean(required=True, description='Active status')
+})
+
+create_customer_model = api.inherit('Customer', base_customer_model, {
+    'address': fields.Nested(create_address_model, description='Address of the Customer')
+})
+
+address_model = api.inherit('AddressModel', create_address_model, {
+    'id': fields.Integer(required=True, description='The system-generated unique Address ID')
+})
+
+customer_model = api.inherit('CustomerModel', base_customer_model, {
+    'customer_id': fields.Integer(required=True, description='The system-generated unique Customer ID'),
+    'address': fields.Nested(address_model, description='Address of the Customer')
 })
 
 # query string
@@ -180,7 +169,7 @@ class CustomerCollection(Resource):
     ### ADD A NEW CUSTOMER
     ### -----------------------------------------------------------
     @api.doc('create_customers', security='apikey')
-    @api.expect(create_model)
+    @api.expect(create_customer_model)
     @api.response(400, 'The posted data was not valid')
     @api.response(201, 'Customer created successfully')
     @api.marshal_with(customer_model, code=201)

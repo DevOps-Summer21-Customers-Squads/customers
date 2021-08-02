@@ -192,11 +192,12 @@ class CustomerCollection(Resource):
         app.logger.info("Request to create a customer")
         check_content_type("application/json")
         customer = Customer()
-        customer.deserialize(request.get_json())
+        app.logger.debug('Payload = %s', api.payload)
+        customer.deserialize(api.payload)
         customer.save()
         customer_id = customer.customer_id
         address = Address()
-        address.deserialize(request.get_json()['address'])
+        address.deserialize(api.payload['address'])
         address.customer_id = customer_id
         address.save()
         customer.address_id = address.id

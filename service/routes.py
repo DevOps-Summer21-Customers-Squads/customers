@@ -159,7 +159,9 @@ def generate_apikey():
     """ Helper function used when testing API keys """
     return uuid.uuid4().hex
 
-
+######################################################################
+# PATH /customers
+######################################################################
 @api.route('/customers', strict_slashes=False)
 class CustomerCollection(Resource):
     """
@@ -224,12 +226,14 @@ class CustomerCollection(Resource):
         app.logger.info("Returning %d customers", len(results))
         return results, status.HTTP_200_OK
 
-
+######################################################################
+# PATH /customers/{customer_id}
+######################################################################
 @api.route('/customers/<int:customer_id>')
 @api.param('customer_id', 'The User identifier')
 class CustomerResource(Resource):
     """
-    Handles CRUD operations of a single Customer
+    Handles CRUD s of a single Customer
     """
     ### -----------------------------------------------------------
     ### RETRIEVE A Customer
@@ -249,6 +253,23 @@ class CustomerResource(Resource):
 
         app.logger.info("Returning customer: %s", customer.customer_id)
         return customer.serialize(), status.HTTP_200_OK
+    
+    ## -----------------------------------------------------------
+    ### DELETE A CUSTOMER
+    ### -----------------------------------------------------------
+    @api.doc('delete_customers', security='apikey')
+    @api.response(204, 'Customer deleted')
+    def delete(self, customer_id):
+        """
+        Delete an Account based on customer ID
+        """
+        app.logger.info("Request to delete customer with id: %s", customer_id)
+        customer = Customer.find(customer_id)
+        if customer:
+            customer.delete()
+
+        app.logger.info("Customer with ID [%s] delete complete.", customer_id)
+        return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ### -----------------------------------------------------------
@@ -342,22 +363,6 @@ def update_customers(customer_id):
     app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
 
     return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
-
-### -----------------------------------------------------------
-### DELETE A CUSTOMER
-### -----------------------------------------------------------
-@app.route("/customers/<int:customer_id>", methods=["DELETE"])
-def delete_customers(customer_id):
-    """
-    Delete an Account based on specified ID
-    """
-    app.logger.info("Request to delete customer with id: %s", customer_id)
-    customer = Customer.find(customer_id)
-    if customer:
-        customer.delete()
-
-    app.logger.info("Customer with ID [%s] delete complete.", customer_id)
-    return make_response("", status.HTTP_204_NO_CONTENT)
 
 ### -----------------------------------------------------------
 ### RETRIEVE AN ADDRESS FROM CUSTOMER

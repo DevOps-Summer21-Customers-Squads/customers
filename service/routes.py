@@ -233,7 +233,7 @@ class CustomerCollection(Resource):
 @api.param('customer_id', 'The User identifier')
 class CustomerResource(Resource):
     """
-    Handles CRUD s of a single Customer
+    Handles CRUD of a single Customer
     """
     ### -----------------------------------------------------------
     ### RETRIEVE A Customer

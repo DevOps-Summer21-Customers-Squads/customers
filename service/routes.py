@@ -202,8 +202,9 @@ class CustomerCollection(Resource):
     ### -----------------------------------------------------------
     ### LIST ALL CUSTOMERS
     ### -----------------------------------------------------------
-    @api.doc('list_customers')
+    @api.doc('list_customers', security='apikey')
     @api.expect(customer_args, validate=True)
+    @api.marshal_list_with(customer_model)
     def get(self):
         """
         Return all of the Customers that satisfy query constraints
@@ -212,15 +213,20 @@ class CustomerCollection(Resource):
         customers = []
         args = customer_args.parse_args()
         if args['first_name']:
+            app.logger.info('Filtering by first name: %s', args['first_name'])
             customers = Customer.find_by_first_name(args['first_name'])
         elif args['last_name']:
+            app.logger.info('Filtering by last name: %s', args['last_name'])
             customers = Customer.find_by_last_name(args['last_name'])
         elif args['active']:
+            app.logger.info('Filtering by active status: %s', args['active'])
             active = args['active'] in ["True", "true"]
             customers = Customer.find_by_active(active)
         elif args['user_id']:
+            app.logger.info('Filtering by user id: %s', args['user_id'])
             customers = Customer.find_by_user_id(args['user_id'])
         else:
+            app.logger.info('Getting all customers')
             customers = Customer.all()
         results = [c.serialize() for c in customers]
         app.logger.info("Returning %d customers", len(results))

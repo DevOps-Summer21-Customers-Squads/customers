@@ -202,8 +202,9 @@ class CustomerCollection(Resource):
     ### -----------------------------------------------------------
     ### LIST ALL CUSTOMERS
     ### -----------------------------------------------------------
-    @api.doc('list_customers')
+    @api.doc('list_customers', security='apikey')
     @api.expect(customer_args, validate=True)
+    @api.marshal_list_with(customer_model)
     def get(self):
         """
         Return all of the Customers that satisfy query constraints

@@ -278,6 +278,46 @@ class CustomerResource(Resource):
         return make_response("", status.HTTP_204_NO_CONTENT)
 
 
+    ### -----------------------------------------------------------
+    ### UPDATE A CUSTOMER
+    ### -----------------------------------------------------------
+    @api.doc('update_customers', security='apikey')
+    @api.response(404, 'Customer not found')
+    @api.response(400, 'The posted Customer data was not valid')
+    @api.expect(customer_model)
+    @api.marshal_with(customer_model)
+    def put(self, customer_id):
+        """
+        Update a customer
+
+        This endpoint will update a Customer based the body that is posted
+        """
+        app.logger.info("Request to update customer with id: %s", customer_id)
+
+        cust = Customer.find(customer_id)
+        if not cust:
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
+        app.logger.debug('Payload = %s', api.payload)
+        data = api.payload
+
+        current_active = cust.active
+
+        cust.deserialize(data)
+        cust.customer_id = customer_id
+
+        if current_active != cust.active:
+            raise BadRequest("Not allowed to change active field while updating, \
+                please use Activate/Deactivate button.")
+        cust.active = current_active
+        cust.save()
+
+        Address.update(cust.address_id, request.get_json()['address'])
+
+        app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
+        return cust.serialize(), status.HTTP_200_OK
+
+
 ######################################################################
 # PATH /customers/<int:customer_id>/activate
 ######################################################################
@@ -342,39 +382,6 @@ class DeactivateResource(Resource):
 
         app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
         return customer.serialize(), status.HTTP_200_OK
-
-
-### -----------------------------------------------------------
-### UPDATE AN EXISTING CUSTOMERS
-### -----------------------------------------------------------
-@app.route("/customers/<int:customer_id>", methods=["PUT"])
-def update_customers(customer_id):
-    """
-    Update a Customer based on customer_id and given customer data
-    """
-    app.logger.info("Request to update customer with id: %s", customer_id)
-    check_content_type("application/json")
-    cust = Customer.find(customer_id, filter_activate=False)
-
-    if not cust:
-        raise NotFound("Customer with id '{}' was not found.".format(customer_id))
-
-    current_active = cust.active
-
-    cust.deserialize(request.get_json())
-    cust.customer_id = customer_id
-
-    if current_active != cust.active:
-        raise BadRequest("Not allowed to change active field while updating, \
-            please use Activate/Deactivate button.")
-    cust.active = current_active
-    cust.save()
-
-    Address.update(cust.address_id, request.get_json()['address'])
-
-    app.logger.info("Customer with ID [%s] updated.", cust.customer_id)
-
-    return make_response(jsonify(cust.serialize()), status.HTTP_200_OK)
 
 ### -----------------------------------------------------------
 ### RETRIEVE AN ADDRESS FROM CUSTOMER

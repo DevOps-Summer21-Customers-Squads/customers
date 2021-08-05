@@ -278,16 +278,19 @@ class CustomerResource(Resource):
         return make_response("", status.HTTP_204_NO_CONTENT)
 
 
-### -----------------------------------------------------------
-### ACTIVATE AN EXISTING CUSTOMERS
-### -----------------------------------------------------------
+######################################################################
+# PATH /customers/<int:customer_id>/activate
+######################################################################
 @api.route('/customers/<int:customer_id>/activate')
 @api.param('customer_id', 'The User identifier')
 class ActivateResource(Resource):
     """
     Handles the operation of activating a Customer
     """
-    @api.doc('activate_customers')
+    ### -----------------------------------------------------------
+    ### ACTIVATE AN EXISTING CUSTOMERS
+    ### -----------------------------------------------------------
+    @api.doc('activate_customers', security='apikey')
     @api.response(404, 'Customer not found')
     @api.marshal_with(customer_model)
     def put(self, customer_id):
@@ -308,16 +311,19 @@ class ActivateResource(Resource):
         return customer.serialize(), status.HTTP_200_OK
 
 
-### -----------------------------------------------------------
-### DEACTIVATE AN EXISTING CUSTOMERS
-### -----------------------------------------------------------
+######################################################################
+# PATH /customers/<int:customer_id>/deactivate
+######################################################################
 @api.route('/customers/<int:customer_id>/deactivate')
 @api.param('customer_id', 'The User identifier')
 class DeactivateResource(Resource):
     """
     Handles the operation of deactivating a Customer
     """
-    @api.doc('deactivate_customers')
+    ### -----------------------------------------------------------
+    ### DEACTIVATE AN EXISTING CUSTOMERS
+    ### -----------------------------------------------------------
+    @api.doc('deactivate_customers', security='apikey')
     @api.response(404, 'Customer not found')
     @api.marshal_with(customer_model)
     def put(self, customer_id):

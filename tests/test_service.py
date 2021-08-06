@@ -31,14 +31,12 @@ Test cases can be run with:
 
 import logging
 import unittest
-import os
 from urllib.parse import quote_plus
 from flask_api import status    # HTTP Status Codes
 from tests.factory_test import CustomerFactory, AddressFactory
 from service.models import Customer, db
 from service.routes import app
 
-DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
 BASE_URL = "/api/customers"
 CONTENT_TYPE_JSON = "application/json"
 
@@ -52,8 +50,6 @@ class TestCustomerServer(unittest.TestCase):
     def setUpClass(cls):
         """This runs once before the entire test suite"""
         app.config["TESTING"] = True
-        app.config["DEBUG"] = False
-        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         Customer.init_db(app)
 

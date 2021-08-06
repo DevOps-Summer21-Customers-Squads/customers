@@ -31,12 +31,9 @@ Test cases can be run with:
 
 import logging
 import unittest
-import os
 from tests.factory_test import CustomerFactory, AddressFactory
 from service.models import Customer, Address, db
 from service.routes import app
-
-DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
 
 ### -----------------------------------------------------------
 ### TESTCASE MODULE for Customer and Address
@@ -47,8 +44,6 @@ class TestCustomers(unittest.TestCase):
     def setUpClass(cls):
         """This runs once before the entire test suite"""
         app.config["TESTING"] = True
-        app.config["DEBUG"] = False
-        app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URI
         app.logger.setLevel(logging.CRITICAL)
         Customer.init_db(app)
 

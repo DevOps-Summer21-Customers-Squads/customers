@@ -9,8 +9,8 @@ DATABASE_URI = os.getenv(
 
 if 'VCAP_SERVICES' in os.environ:
     print('Getting database from VCAP_SERVICES')
-    vcap_services = json.loads(os.environ['VCAP_SERVICES'])
-    DATABASE_URI = vcap_services['user-provided'][0]['credentials']['url']
+    VCAP_SERVICES = json.loads(os.environ['VCAP_SERVICES'])
+    DATABASE_URI = VCAP_SERVICES['user-provided'][0]['credentials']['url']
 
 
 # Configure SQLAlchemy

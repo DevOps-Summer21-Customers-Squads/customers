@@ -78,7 +78,7 @@ $(function () {
     first_name && (customer.first_name = first_name);
     last_name && (customer.last_name = last_name);
     password && (customer.password = password);
-    active !== "" && (customer.active = active);
+    active !== "n/a" && (customer.active = active);
     address && (customer.address = address);
 
     // send it to the backend
@@ -133,7 +133,7 @@ $(function () {
     first_name && (customer.first_name = first_name);
     last_name && (customer.last_name = last_name);
     password && (customer.password = password);
-    active !== "" && (customer.active = active);
+    active !== "n/a" && (customer.active = active);
     address && (customer.address = address);
 
     var ajax = $.ajax({
@@ -329,7 +329,7 @@ $(function () {
         queryString += "apartment=" + zip_code;
       }
     }
-    if (active !== "") {
+    if (active !== "n/a") {
       if (queryString.length > 0) {
         queryString += "&active=" + active;
       } else {

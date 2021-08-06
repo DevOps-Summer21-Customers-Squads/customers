@@ -18,9 +18,9 @@ $(function () {
     $("#state").val(addr.state);
     $("#zip_code").val(addr.zip_code);
     if (res.active === true) {
-      $("#active").val("true");
+      $("#active").val("true").change();
     } else {
-      $("#active").val("false");
+      $("#active").val("false").change();
     }
   }
 

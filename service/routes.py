@@ -35,13 +35,8 @@ DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
 import uuid
-# import logging
-# import atexit
-# from functools import wraps
-from flask import jsonify, request, make_response, abort
+from flask import request, make_response
 from flask_restx import Api, Resource, fields, reqparse
-from flask_restx.errors import ValidationError#, inputs
-from werkzeug.exceptions import NotFound, BadRequest
 from service.models import Customer, Address, DataValidationError#, DatabaseConnectionError
 from . import status  # HTTP Status Codes
 
@@ -97,7 +92,8 @@ address_model = api.inherit('AddressModel', create_address_model, {
 })
 
 customer_model = api.inherit('CustomerModel', base_customer_model, {
-    'customer_id': fields.Integer(required=True, description='The system-generated unique Customer ID'),
+    'customer_id': fields.Integer(required=True,
+                                  description='The system-generated unique Customer ID'),
     'address': fields.Nested(address_model, description='Address of the Customer')
 })
 
@@ -254,11 +250,12 @@ class CustomerResource(Resource):
         app.logger.info("Request for customer with id: %s", customer_id)
         customer = Customer.find(customer_id)
         if not customer:
-            abort(status.HTTP_404_NOT_FOUND, "Customer with id '{}' was not found.".format(customer_id))
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
 
         app.logger.info("Returning customer: %s", customer.customer_id)
         return customer.serialize(), status.HTTP_200_OK
-    
+
     ## -----------------------------------------------------------
     ### DELETE A CUSTOMER
     ### -----------------------------------------------------------
@@ -339,7 +336,8 @@ class ActivateResource(Resource):
         app.logger.info("Request to activate customer with id: %s", customer_id)
         customer = Customer.find(customer_id, filter_activate=False)
         if not customer:
-            abort(status.HTTP_404_NOT_FOUND, "Customer with id '{}' was not found.".format(customer_id))
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
         customer.active = True
         customer.customer_id = customer_id
         customer.save()
@@ -369,10 +367,11 @@ class DeactivateResource(Resource):
         This endpoint will return a Customer based on it's id
         """
         app.logger.info("Request to deactivate customer with id: %s", customer_id)
-        
+
         customer = Customer.find(customer_id, filter_activate=False)
         if not customer:
-            abort(status.HTTP_404_NOT_FOUND, "Customer with id '{}' was not found.".format(customer_id))
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
         customer.active = False
         customer.customer_id = customer_id
         customer.save()

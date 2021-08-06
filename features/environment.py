@@ -2,7 +2,7 @@
 BDD Environment
 """
 import os
-from behave import *
+# from behave import *
 from selenium import webdriver
 
 WAIT_SECONDS = 20

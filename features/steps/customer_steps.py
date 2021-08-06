@@ -1,4 +1,3 @@
-
 from os import getenv
 import logging
 import json
@@ -20,7 +19,7 @@ def step_impl(context):
     headers = {'Content-Type': 'application/json'}
     context.resp = requests.delete(context.base_url + '/api/customers', headers=headers)
     expect(context.resp.status_code).to_equal(204)
-    
+
     create_url = context.base_url + '/api/customers'
     for row in context.table:
         data = {
@@ -37,7 +36,7 @@ def step_impl(context):
                 "zip_code": row['zip_code'],
                 }
             }
-            
+
         payload = json.dumps(data)
         context.resp = requests.post(create_url, data=payload, headers=headers)
         expect(context.resp.status_code).to_equal(201)

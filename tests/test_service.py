@@ -73,7 +73,7 @@ class TestCustomerServer(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-    def _fake_customers(self, num, active = True):
+    def _fake_customers(self, num, active=True):
         """Factory method to fake customers in batch"""
         customers = []
         for _ in range(num):
@@ -345,7 +345,7 @@ class TestCustomerServer(unittest.TestCase):
         Activate a customer by ID
         """
         # create a Customer to activate
-        test_customer = self._fake_customers(1, active = False)[0]
+        test_customer = self._fake_customers(1, active=False)[0]
         # make sure the original customer is not active
         self.assertEqual(test_customer.active, False)
 

@@ -55,7 +55,6 @@ def init_db(app):
 class DataValidationError(Exception):
     """Used for an data validation errors when deserializing"""
 
-    
 ### -----------------------------------------------------------
 ### CLASS Customer
 ### -----------------------------------------------------------
@@ -247,7 +246,6 @@ class Customer(db.Model):
         """
         logger.info("Processing user id query for %s ...", user_id)
         return cls.query.filter(cls.user_id == user_id)
-    
 
 ### -----------------------------------------------------------
 ### CLASS Address

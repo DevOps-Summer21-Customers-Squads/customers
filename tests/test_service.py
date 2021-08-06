@@ -358,6 +358,17 @@ class TestCustomerServer(unittest.TestCase):
         activated_customer = resp.get_json()
         self.assertEqual(activated_customer["active"], True)
 
+    def test_activate_customer_not_found(self):
+        """
+        Activate a non-existing customer
+        """
+
+        resp = self.app.put(
+            BASE_URL + "/{}/activate".format(0),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_deactivate_customer(self):
         """
         Deactivate a customer by ID
@@ -375,6 +386,17 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         deactivated_customer = resp.get_json()
         self.assertEqual(deactivated_customer["active"], False)
+
+    def test_deactivate_customer_not_found(self):
+        """
+        Deactivate a non-existing customer
+        """
+
+        resp = self.app.put(
+            BASE_URL + "/{}/deactivate".format(0),
+            content_type="application/json",
+        )
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_update_customer(self):
         """Update a customer"""

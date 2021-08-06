@@ -14,14 +14,14 @@ from selenium.webdriver.support import expected_conditions
 WAIT_SECONDS = int(getenv('WAIT_SECONDS', '20'))
 
 
-@given(u'the following customers')
+@given('the following customers')
 def step_impl(context):
-    """ Flush the Database and Add Customers in Batch """
+    """ Reset the Database and Add Customers in Batch """
     headers = {'Content-Type': 'application/json'}
-    context.resp = requests.delete(context.base_url + '/customers/flush', headers=headers)
+    context.resp = requests.delete(context.base_url + '/api/customers', headers=headers)
     expect(context.resp.status_code).to_equal(204)
     
-    create_url = context.base_url + '/customers'
+    create_url = context.base_url + '/api/customers'
     for row in context.table:
         data = {
             "user_id": row['user_id'],
@@ -43,25 +43,25 @@ def step_impl(context):
         expect(context.resp.status_code).to_equal(201)
 
 
-@when(u'I visit the Home Page')
+@when('I visit the Home Page')
 def step_impl(context):
     """ Access the base URL """
     context.driver.get(context.base_url)
 
 
-@then(u'I should see "{message}" in the title')
+@then('I should see "{message}" in the title')
 def step_impl(context, message):
     """ Check the document title for a message """
     expect(context.driver.title).to_contain(message)
 
 
-@then(u'I should not see "{message}"')
+@then('I should not see "{message}"')
 def step_impl(context, message):
     error_msg = "I should not see '%s' in '%s'" % (message, context.resp.text)
     ensure(message in context.resp.text, False, error_msg)
 
 
-@when(u'I set the "{element_name}" to "{text_string}"')
+@when('I set the "{element_name}" to "{text_string}"')
 def step_impl(context, element_name, text_string):
     element_id = element_name.replace(" ", "_").lower()
     element = context.driver.find_element_by_id(element_id)

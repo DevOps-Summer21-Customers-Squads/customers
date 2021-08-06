@@ -19,6 +19,7 @@ coverage.xml
 
 # test
 unittests.xml 
+.noseids
 
 # Log
 *.log

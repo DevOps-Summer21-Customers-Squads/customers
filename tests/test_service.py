@@ -39,7 +39,7 @@ from service.models import Customer, db
 from service.routes import app
 
 DATABASE_URI = os.getenv('DATABASE_URI', 'postgres://postgres:postgres@localhost:5432/postgres')
-BASE_URL = "/customers"
+BASE_URL = "/api/customers"
 CONTENT_TYPE_JSON = "application/json"
 
 
@@ -73,11 +73,12 @@ class TestCustomerServer(unittest.TestCase):
         db.session.remove()
         db.drop_all()
 
-    def _fake_customers(self, num):
+    def _fake_customers(self, num, active = True):
         """Factory method to fake customers in batch"""
         customers = []
         for _ in range(num):
             test_customer = CustomerFactory()
+            test_customer.active = active
             test_address = AddressFactory()
             addr_json = test_address.serialize()
             cust_json = test_customer.alternative_serialize()
@@ -189,10 +190,10 @@ class TestCustomerServer(unittest.TestCase):
         <Anomaly> Query non-existent Customer
         """
         self._fake_customers(1)
-        resp = self.app.get('/customers/{}'.format(100000),
+        resp = self.app.get(BASE_URL + '/{}'.format(100000),
                             content_type='application/json')
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-        resp = self.app.get("/customers/100")
+        resp = self.app.get(BASE_URL + "/100")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_get_customer_by_id(self):
@@ -201,7 +202,7 @@ class TestCustomerServer(unittest.TestCase):
         """
         # get the id of a customer
         test_customer = self._fake_customers(1)[0]
-        resp = self.app.get("/customers/{}".format(test_customer.customer_id),
+        resp = self.app.get(BASE_URL + "/{}".format(test_customer.customer_id),
                             content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         data = resp.get_json()
@@ -308,20 +309,20 @@ class TestCustomerServer(unittest.TestCase):
         resp = self.app.post(BASE_URL,
                              json=body,
                              content_type='text/plain')
-        self.assertEqual(resp.status_code, status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_internal_server_error_500(self):
         """
         <Anomaly> Delete non-existent Customer
         """
-        resp = self.app.delete('/customers/100', content_type=CONTENT_TYPE_JSON)
+        resp = self.app.delete(BASE_URL + '/100', content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_invalid_method_request_405(self):
         """
         <Anomaly> Try bad request (method not allowed)
         """
-        resp = self.app.delete('/customers', content_type=CONTENT_TYPE_JSON)
+        resp = self.app.put(BASE_URL + '', content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_delete_customer(self):
@@ -329,13 +330,13 @@ class TestCustomerServer(unittest.TestCase):
         # create a customer to delete
         test_customer = self._fake_customers(1)[0]
 
-        resp = self.app.delete('/customers/{}'.format(test_customer.customer_id),
+        resp = self.app.delete('/api/customers/{}'.format(test_customer.customer_id),
                                content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)
 
         # make sure they are deleted
-        resp = self.app.get('/customers/{}'.format(test_customer.customer_id),
+        resp = self.app.get('/api/customers/{}'.format(test_customer.customer_id),
                             content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -344,14 +345,13 @@ class TestCustomerServer(unittest.TestCase):
         Activate a customer by ID
         """
         # create a Customer to activate
-        test_customer = self._fake_customers(1)[0]
-        test_customer.active = False
+        test_customer = self._fake_customers(1, active = False)[0]
         # make sure the original customer is not active
         self.assertEqual(test_customer.active, False)
 
         # activate the customer
         resp = self.app.put(
-            "/customers/{}/activate".format(test_customer.customer_id),
+            BASE_URL + "/{}/activate".format(test_customer.customer_id),
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -369,7 +369,7 @@ class TestCustomerServer(unittest.TestCase):
 
         # deactivate the customer
         resp = self.app.put(
-            "/customers/{}/deactivate".format(test_customer.customer_id),
+            BASE_URL + "/{}/deactivate".format(test_customer.customer_id),
             content_type="application/json",
         )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -483,68 +483,8 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
 
-    def test_get_address(self):
-        """
-        Get an Address from a Customer by Address ID
-        """
-        body = {
-            "first_name": "Young",
-            "last_name": "Nick",
-            "user_id": "confused",
-            "password": "lakers",
-            "address": {
-                "street": "100 W 100 St.",
-                "apartment": "100",
-                "city": "LA",
-                "state": "Cali",
-                "zip_code": "100"
-            },
-            "active": True
-        }
-        resp = self.app.post(BASE_URL,
-                             json=body,
-                             content_type=CONTENT_TYPE_JSON)
-        data = resp.get_json()
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        customer_id = data["customer_id"]
-        address_id = data["address"]["id"]
-        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id),
-                            content_type=CONTENT_TYPE_JSON)
-        self.assertEqual(resp.status_code, status.HTTP_200_OK)
-
-
-    def test_address_not_found(self):
-        """
-        <Anomaly> Query non-existent Address
-        """
-        body = {
-            "first_name": "Young",
-            "last_name": "Nick",
-            "user_id": "confused",
-            "password": "lakers",
-            "address": {
-                "street": "100 W 100 St.",
-                "apartment": "100",
-                "city": "LA",
-                "state": "Cali",
-                "zip_code": "100"
-            },
-            "active": True
-        }
-        resp = self.app.post(BASE_URL,
-                             json=body,
-                             content_type=CONTENT_TYPE_JSON)
-        data = resp.get_json()
-        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-        customer_id = data["customer_id"]
-        address_id = 100
-        resp = self.app.get("/customers/{}/addresses/{}".format(customer_id, address_id),
-                            content_type=CONTENT_TYPE_JSON)
-        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
-
-
-    def test_flush_database(self):
+    def test_clear_database(self):
         """ Removes all Customers """
-        resp = self.app.delete('/customers/flush', content_type=CONTENT_TYPE_JSON)
+        resp = self.app.delete('/api/customers', content_type=CONTENT_TYPE_JSON)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(len(resp.data), 0)

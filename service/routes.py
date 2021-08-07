@@ -216,11 +216,9 @@ class CustomerCollection(Resource):
     @api.response(204, 'All Customers deleted')
     def delete(self):
         """
-        Delete all Pet
-
-        This endpoint will delete all Pet only if the system is under test
+        Delete all Customers (for testing only)
         """
-        app.logger.info('Request to Delete all pets...')
+        app.logger.info('Request to Delete all customers...')
         Address.remove_all()
         Customer.remove_all()
         app.logger.info("Removed all Customers and Addresses from the database")
@@ -244,8 +242,8 @@ class CustomerResource(Resource):
     @api.marshal_with(customer_model)
     def get(self, customer_id):
         """
-        Retrieve a single Customer
-        This endpoint will return a Customer based on it's id
+        Retrieve a Customer
+        This endpoint will return a Customer based on its Customer ID
         """
         app.logger.info("Request for customer with id: %s", customer_id)
         customer = Customer.find(customer_id)
@@ -263,7 +261,8 @@ class CustomerResource(Resource):
     @api.response(204, 'Customer deleted')
     def delete(self, customer_id):
         """
-        Delete an Account based on customer ID
+        Delete a Customer
+        This endpoint will delete a Customer based on its Customer ID
         """
         app.logger.info("Request to delete customer with id: %s", customer_id)
         customer = Customer.find(customer_id)
@@ -285,7 +284,6 @@ class CustomerResource(Resource):
     def put(self, customer_id):
         """
         Update a customer
-
         This endpoint will update a Customer based the body that is posted
         """
         app.logger.info("Request to update customer with id: %s", customer_id)
@@ -330,8 +328,8 @@ class ActivateResource(Resource):
     @api.marshal_with(customer_model)
     def put(self, customer_id):
         """
-        Activate a single Customer
-        This endpoint will return a Customer based on it's id
+        Activate a Customer
+        This endpoint will return a Customer based on its Customer ID
         """
         app.logger.info("Request to activate customer with id: %s", customer_id)
         customer = Customer.find(customer_id, filter_activate=False)
@@ -363,8 +361,8 @@ class DeactivateResource(Resource):
     @api.marshal_with(customer_model)
     def put(self, customer_id):
         """
-        Deactivate a single Customer
-        This endpoint will return a Customer based on it's id
+        Deactivate a Customer
+        This endpoint will return a Customer based on its Customer ID
         """
         app.logger.info("Request to deactivate customer with id: %s", customer_id)
 

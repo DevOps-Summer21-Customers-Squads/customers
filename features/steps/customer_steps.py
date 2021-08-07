@@ -106,9 +106,14 @@ def step_impl(context, message):
 @then('the "{element_name}" field should be empty')
 def step_impl(context, element_name):
     element_id = element_name.replace(" ", "_").lower()
-    element = context.driver.find_element_by_id(element_id)
-    expect(element.get_attribute('value')).to_be(u'')
-
+    found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, element_id),
+            ''
+        )
+    )
+    expect(found).to_be(True)
+    
 
 @then('I should see "{text_string}" in the "{element_name}" field')
 def step_impl(context, text_string, element_name):
@@ -130,8 +135,13 @@ def step_impl(context, text, element_name):
 @then('I should see "{text}" in the "{element_name}" dropdown')
 def step_impl(context, text, element_name):
     element_id = element_name.replace(" ", "_").lower()
-    element = Select(context.driver.find_element_by_id(element_id))
-    expect(element.first_selected_option.text).to_equal(text)
+    found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.text_to_be_present_in_element(
+            (By.ID, element_id),
+            text
+        )
+    )
+    expect(found).to_be(True)
 
 ##################################################################
 # These two function simulate copy and paste

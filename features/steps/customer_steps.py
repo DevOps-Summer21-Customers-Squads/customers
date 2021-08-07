@@ -2,6 +2,7 @@ from os import getenv
 import logging
 import json
 import requests
+import time
 from behave import *
 from compare import expect, ensure
 from selenium.webdriver.common.by import By
@@ -71,6 +72,7 @@ def step_impl(context, element_name, text_string):
 
 @when('I press the "{button}" button')
 def step_impl(context, button):
+    time.sleep(1)
     button_id = button.lower() + '-btn'
     context.driver.find_element_by_id(button_id).click()
 

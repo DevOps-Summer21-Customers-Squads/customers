@@ -35,26 +35,13 @@ DELETE /customers/{id} - Deletes a Customer record in the database
 """
 
 import uuid
-# import logging
-# import atexit
-# from functools import wraps
-from flask import jsonify, request, make_response, abort
-from flask_restx import Api, Resource, fields, reqparse#, inputs
-from werkzeug.exceptions import NotFound, BadRequest
+from flask import request, make_response
+from flask_restx import Api, Resource, fields, reqparse
 from service.models import Customer, Address, DataValidationError#, DatabaseConnectionError
 from . import status  # HTTP Status Codes
 
 # Import Flask application
 from . import app
-
-# Document the type of autorization required
-authorizations = {
-    'apikey': {
-        'type': 'apiKey',
-        'in': 'header',
-        'name': 'X-Api-Key'
-    }
-}
 
 ### -----------------------------------------------------------
 ### GET INDEX
@@ -76,8 +63,7 @@ api = Api(app,
           default='customers',
           default_label='Customer operations',
           doc='/apidocs',
-
-          authorizations=authorizations
+          prefix='/api'
          )
 
 # Define the model so that the docs reflect what can be sent
@@ -106,7 +92,8 @@ address_model = api.inherit('AddressModel', create_address_model, {
 })
 
 customer_model = api.inherit('CustomerModel', base_customer_model, {
-    'customer_id': fields.Integer(required=True, description='The system-generated unique Customer ID'),
+    'customer_id': fields.Integer(required=True,
+                                  description='The system-generated unique Customer ID'),
     'address': fields.Nested(address_model, description='Address of the Customer')
 })
 
@@ -142,15 +129,6 @@ def request_validation_error(error):
         'message': message
     }, status.HTTP_400_BAD_REQUEST
 
-@app.errorhandler(status.HTTP_500_INTERNAL_SERVER_ERROR)
-def internal_server_error(error):
-    """ Handles unexpected server error with 500_SERVER_ERROR """
-    message = str(error)
-    app.logger.error(message)
-    return jsonify(status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                   error='Internal Server Error',
-                   message=message), status.HTTP_500_INTERNAL_SERVER_ERROR
-
 
 ### -----------------------------------------------------------
 ### Generate a random API key
@@ -170,7 +148,7 @@ class CustomerCollection(Resource):
     ### -----------------------------------------------------------
     ### ADD A NEW CUSTOMER
     ### -----------------------------------------------------------
-    @api.doc('create_customers', security='apikey')
+    @api.doc('create_customers')
     @api.expect(create_customer_model)
     @api.response(400, 'The posted data was not valid')
     @api.response(201, 'Customer created successfully')
@@ -181,7 +159,6 @@ class CustomerCollection(Resource):
         This endpoint will create a Customer based on the data in the body that is posted
         """
         app.logger.info("Request to create a customer")
-        check_content_type("application/json")
         customer = Customer()
         app.logger.debug('Payload = %s', api.payload)
         customer.deserialize(api.payload)
@@ -202,7 +179,7 @@ class CustomerCollection(Resource):
     ### -----------------------------------------------------------
     ### LIST ALL CUSTOMERS
     ### -----------------------------------------------------------
-    @api.doc('list_customers', security='apikey')
+    @api.doc('list_customers')
     @api.expect(customer_args, validate=True)
     @api.marshal_list_with(customer_model)
     def get(self):
@@ -232,6 +209,22 @@ class CustomerCollection(Resource):
         app.logger.info("Returning %d customers", len(results))
         return results, status.HTTP_200_OK
 
+    #------------------------------------------------------------------
+    # DELETE ALL CUSTOMERS (for testing only)
+    #------------------------------------------------------------------
+    @api.doc('delete_all_customers')
+    @api.response(204, 'All Customers deleted')
+    def delete(self):
+        """
+        Delete all Customers (for testing only)
+        """
+        app.logger.info('Request to Delete all customers...')
+        Address.remove_all()
+        Customer.remove_all()
+        app.logger.info("Removed all Customers and Addresses from the database")
+
+        return '', status.HTTP_204_NO_CONTENT
+
 ######################################################################
 # PATH /customers/{customer_id}
 ######################################################################
@@ -249,25 +242,27 @@ class CustomerResource(Resource):
     @api.marshal_with(customer_model)
     def get(self, customer_id):
         """
-        Retrieve a single Customer
-        This endpoint will return a Customer based on it's id
+        Retrieve a Customer
+        This endpoint will return a Customer based on its Customer ID
         """
         app.logger.info("Request for customer with id: %s", customer_id)
         customer = Customer.find(customer_id)
         if not customer:
-            raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
 
         app.logger.info("Returning customer: %s", customer.customer_id)
         return customer.serialize(), status.HTTP_200_OK
-    
+
     ## -----------------------------------------------------------
     ### DELETE A CUSTOMER
     ### -----------------------------------------------------------
-    @api.doc('delete_customers', security='apikey')
+    @api.doc('delete_customers')
     @api.response(204, 'Customer deleted')
     def delete(self, customer_id):
         """
-        Delete an Account based on customer ID
+        Delete a Customer
+        This endpoint will delete a Customer based on its Customer ID
         """
         app.logger.info("Request to delete customer with id: %s", customer_id)
         customer = Customer.find(customer_id)
@@ -281,7 +276,7 @@ class CustomerResource(Resource):
     ### -----------------------------------------------------------
     ### UPDATE A CUSTOMER
     ### -----------------------------------------------------------
-    @api.doc('update_customers', security='apikey')
+    @api.doc('update_customers')
     @api.response(404, 'Customer not found')
     @api.response(400, 'The posted Customer data was not valid')
     @api.expect(customer_model)
@@ -289,11 +284,9 @@ class CustomerResource(Resource):
     def put(self, customer_id):
         """
         Update a customer
-
         This endpoint will update a Customer based the body that is posted
         """
         app.logger.info("Request to update customer with id: %s", customer_id)
-
         cust = Customer.find(customer_id)
         if not cust:
             abort(status.HTTP_404_NOT_FOUND,
@@ -307,7 +300,7 @@ class CustomerResource(Resource):
         cust.customer_id = customer_id
 
         if current_active != cust.active:
-            raise BadRequest("Not allowed to change active field while updating, \
+            raise DataValidationError("Not allowed to change active field while updating, \
                 please use Activate/Deactivate button.")
         cust.active = current_active
         cust.save()
@@ -330,19 +323,19 @@ class ActivateResource(Resource):
     ### -----------------------------------------------------------
     ### ACTIVATE AN EXISTING CUSTOMERS
     ### -----------------------------------------------------------
-    @api.doc('activate_customers', security='apikey')
+    @api.doc('activate_customers')
     @api.response(404, 'Customer not found')
     @api.marshal_with(customer_model)
     def put(self, customer_id):
         """
-        Activate a single Customer
-        This endpoint will return a Customer based on it's id
+        Activate a Customer
+        This endpoint will return a Customer based on its Customer ID
         """
         app.logger.info("Request to activate customer with id: %s", customer_id)
-        check_content_type("application/json")
         customer = Customer.find(customer_id, filter_activate=False)
         if not customer:
-            raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
         customer.active = True
         customer.customer_id = customer_id
         customer.save()
@@ -363,19 +356,20 @@ class DeactivateResource(Resource):
     ### -----------------------------------------------------------
     ### DEACTIVATE AN EXISTING CUSTOMERS
     ### -----------------------------------------------------------
-    @api.doc('deactivate_customers', security='apikey')
+    @api.doc('deactivate_customers')
     @api.response(404, 'Customer not found')
     @api.marshal_with(customer_model)
     def put(self, customer_id):
         """
-        Deactivate a single Customer
-        This endpoint will return a Customer based on it's id
+        Deactivate a Customer
+        This endpoint will return a Customer based on its Customer ID
         """
         app.logger.info("Request to deactivate customer with id: %s", customer_id)
-        check_content_type("application/json")
+
         customer = Customer.find(customer_id, filter_activate=False)
         if not customer:
-            raise NotFound("Customer with id '{}' was not found.".format(customer_id))
+            abort(status.HTTP_404_NOT_FOUND,
+                  "Customer with id '{}' was not found.".format(customer_id))
         customer.active = False
         customer.customer_id = customer_id
         customer.save()
@@ -383,43 +377,11 @@ class DeactivateResource(Resource):
         app.logger.info("Customer with ID [%s] deactivated.", customer.customer_id)
         return customer.serialize(), status.HTTP_200_OK
 
-### -----------------------------------------------------------
-### RETRIEVE AN ADDRESS FROM CUSTOMER
-### -----------------------------------------------------------
-@app.route('/customers/<int:customer_id>/addresses/<int:address_id>', methods=['GET'])
-def get_addresses(customer_id, address_id): # customer_id not used but kept for readbility pylint: disable=unused-argument
-    """
-    Get an Address
-    Just an address get returned
-    """
-    app.logger.info("Request to get an address with id: %s", address_id)
-    address = Address.find(address_id)
-    if not address:
-        raise NotFound("Address with id '{}' was not found.".format(address_id))
-    return make_response(jsonify(address), status.HTTP_200_OK)
-
-
-### -----------------------------------------------------------
-### FlUSH THE WHOLE CUSTOMER DATABASE
-### -----------------------------------------------------------
-@app.route('/customers/flush', methods=['DELETE'])
-def customers_reset():
-    """ Removes all customers from the database """
-    Address.remove_all()
-    Customer.remove_all()
-    return make_response('', status.HTTP_204_NO_CONTENT)
-
 
 ### -----------------------------------------------------------
 ### Auxiliary Utilites
 ### -----------------------------------------------------------
-def check_content_type(media_type):
-    """Checks that the media type is correct"""
-    content_type = request.headers.get("Content-Type")
-    if content_type and content_type == media_type:
-        return
-    app.logger.error("Invalid Content-Type: %s", content_type)
-    abort(
-        status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-        "Content-Type must be {}".format(media_type),
-    )
+def abort(error_code: int, message: str):
+    """Logs errors before aborting"""
+    app.logger.error(message)
+    api.abort(error_code, message)

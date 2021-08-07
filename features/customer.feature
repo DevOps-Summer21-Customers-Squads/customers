@@ -52,8 +52,8 @@ Scenario: List all Customers with user ID 1
     And I press the "Clear" button
     And I set the "User ID" to "1"
     And I press the "Search" button
-    Then I should see "1" in the results
-    And I should not see "2" in the results
+    Then I should see "ln1" in the results
+    And I should not see "ln2" in the results
 
 Scenario: Create a Customer
     When I visit the Home Page
@@ -101,11 +101,11 @@ Scenario: Activate and Deactivate a Customer
     And I should see "fn1" in the "First Name" field
     And I should see "True" in the "active" dropdown
     When I press the "Deactivate" button
-    Then I should see the message "Customer deactivated."
+    Then I should see the message "Success"
     And I should see "fn1" in the "First Name" field
     And I should see "False" in the "active" dropdown
     When I press the "Activate" button
-    Then I should see the message "Customer activated."
+    Then I should see the message "Success"
     And I should see "fn1" in the "First Name" field
     And I should see "True" in the "active" dropdown
 
@@ -164,7 +164,7 @@ Scenario: Delete a Customer
     Then I should see the message "Success"
     And I should see "fn1" in the results
     When I press the "Delete" button
-    Then I should see the message "Customer has been Deleted!"
+    Then I should see the message "Success"
     When I press the "Clear" button
     And I press the "Search" button
     Then I should not see "fn1" in the results

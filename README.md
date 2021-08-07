@@ -171,7 +171,3 @@ API documentation: https://nyu-customer-service-sum21.us-south.cf.appdomain.clou
 ### Deactivate
 
 - PUT /customers/customer_id (int)/deactivate
-
-### Get Addresses
-
-- GET /customers/customer_id (int)/addresses/address_id (int)

@@ -18,9 +18,9 @@ $(function () {
     $("#state").val(addr.state);
     $("#zip_code").val(addr.zip_code);
     if (res.active === true) {
-      $("#active").val("true");
+      $("#active").val("true").change();
     } else {
-      $("#active").val("false");
+      $("#active").val("false").change();
     }
   }
 
@@ -46,7 +46,7 @@ $(function () {
   }
 
   function validation_error() {
-    window.alert("Oops! The values in some required fields are invalid. Please modify them to run the action.");
+    window.alert("Oops! Please enter the Customer ID.");
   }
 
   // ****************************************
@@ -68,36 +68,29 @@ $(function () {
     var state = $("#state").val();
     var zip_code = $("#zip_code").val();
 
-    if (!user_id || !first_name || !last_name || !password || active=="n/a" || !street || !apartment || !city || !state || !zip_code) {
-      validation_error();
-      return;
-    }
-
     // create address obj
-    var address = {
-      street: street,
-      apartment: apartment,
-      city: city,
-      state: state,
-      zip_code: zip_code,
-    };
+    var address = {};
+    street && (address.street = street);
+    apartment && (address.apartment = apartment);
+    city && (address.city = city);
+    state && (address.state = state);
+    zip_code && (address.zip_code = zip_code);
 
-    // create data obj
-    var data = {
-      user_id: user_id,
-      first_name: first_name,
-      last_name: last_name,
-      password: password,
-      active: active,
-      address: address,
-    };
+    // create customer obj
+    var customer = {};
+    user_id && (customer.user_id = user_id);
+    first_name && (customer.first_name = first_name);
+    last_name && (customer.last_name = last_name);
+    password && (customer.password = password);
+    active !== "n/a" && (customer.active = active);
+    address && (customer.address = address);
 
     // send it to the backend
     var ajax = $.ajax({
       type: "POST",
-      url: "/customers",
+      url: "api/customers",
       contentType: "application/json",
-      data: JSON.stringify(data),
+      data: JSON.stringify(customer),
     });
 
     ajax.done(function (res) {
@@ -129,35 +122,29 @@ $(function () {
     var state = $("#state").val();
     var zip_code = $("#zip_code").val();
 
-    if (!customer_id || !user_id || !first_name || !last_name || !password || active=="n/a" || !street || !apartment || !city || !state || !zip_code) {
-      validation_error();
-      return;
-    }
-
     // create address obj
-    var address = {
-      street: street,
-      apartment: apartment,
-      city: city,
-      state: state,
-      zip_code: zip_code,
-    };
+    var address = {};
+    street && (address.street = street);
+    apartment && (address.apartment = apartment);
+    city && (address.city = city);
+    state && (address.state = state);
+    zip_code && (address.zip_code = zip_code);
 
-    // create data obj
-    var data = {
-      user_id: user_id,
-      first_name: first_name,
-      last_name: last_name,
-      password: password,
-      address: address,
-      active: active,
-    };
+    // create customer obj
+    var customer = {};
+    customer_id && (customer.customer_id = customer_id)
+    user_id && (customer.user_id = user_id);
+    first_name && (customer.first_name = first_name);
+    last_name && (customer.last_name = last_name);
+    password && (customer.password = password);
+    active !== "n/a" && (customer.active = active);
+    address && (customer.address = address);
 
     var ajax = $.ajax({
       type: "PUT",
-      url: "/customers/" + customer_id,
+      url: "api/customers/" + customer_id,
       contentType: "application/json",
-      data: JSON.stringify(data),
+      data: JSON.stringify(customer),
     });
 
     ajax.done(function (res) {
@@ -184,14 +171,14 @@ $(function () {
 
     var ajax = $.ajax({
       type: "PUT",
-      url: "/customers/" + customer_id + "/deactivate",
+      url: "api/customers/" + customer_id + "/deactivate",
       contentType: "application/json",
     });
 
     ajax.done(function (res) {
       // console.log(res)
       update_form_data(res);
-      flash_message("Customer deactivated.");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
@@ -213,13 +200,13 @@ $(function () {
 
     var ajax = $.ajax({
       type: "PUT",
-      url: "/customers/" + customer_id + "/activate",
+      url: "api/customers/" + customer_id + "/activate",
       contentType: "application/json",
     });
 
     ajax.done(function (res) {
       update_form_data(res);
-      flash_message("Customer activated.");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
@@ -241,7 +228,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "GET",
-      url: "/customers/" + customer_id,
+      url: "api/customers/" + customer_id,
       contentType: "application/json",
       data: "",
     });
@@ -265,7 +252,7 @@ $(function () {
 
   $("#delete-btn").click(function () {
     var customer_id = $("#customer_id").val();
-    
+
     if (!customer_id) {
       validation_error();
       return;
@@ -273,18 +260,18 @@ $(function () {
 
     var ajax = $.ajax({
       type: "DELETE",
-      url: "/customers/" + customer_id,
+      url: "api/customers/" + customer_id,
       contentType: "application/json",
       data: "",
     });
 
     ajax.done(function (res) {
       clear_form_data();
-      flash_message("Customer has been Deleted!");
+      flash_message("Success");
     });
 
     ajax.fail(function (res) {
-      flash_message("Server error!");
+      flash_message(res.responseJSON.message);
     });
   });
 
@@ -366,7 +353,7 @@ $(function () {
         queryString += "apartment=" + zip_code;
       }
     }
-    if (active != "n/a") {
+    if (active !== "n/a") {
       if (queryString.length > 0) {
         queryString += "&active=" + active;
       } else {
@@ -376,7 +363,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "GET",
-      url: "/customers?" + queryString,
+      url: "api/customers?" + queryString,
       contentType: "application/json",
       data: "",
     });

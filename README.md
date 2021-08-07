@@ -76,6 +76,11 @@ If you want to see the lines of codes not tested, run:
 $ coverage report -m
 ```
 
+### Run BDD Integration Tests
+```
+$ behave
+```
+
 ### Terminate the Service
 Before you leave, be reminded to terminate the service by running
 ```
@@ -86,6 +91,13 @@ If the virtual machine is no longer needed, you can:
 ```
 $ vagrant destroy
 ```
+
+## Links
+Devlopment: https://nyu-customer-service-sum21-dev.us-south.cf.appdomain.cloud/
+
+Production: https://nyu-customer-service-sum21.us-south.cf.appdomain.cloud/
+
+API documentation: https://nyu-customer-service-sum21.us-south.cf.appdomain.cloud/apidocs
 
 ## API Documentation
 ### Create

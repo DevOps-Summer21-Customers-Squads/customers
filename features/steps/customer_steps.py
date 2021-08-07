@@ -77,9 +77,13 @@ def step_impl(context, button):
 @then('I should not see "{name}" in the results')
 def step_impl(context, name):
     element = context.driver.find_element_by_id('search-results')
-    context.driver.implicitly_wait(WAIT_SECONDS)
+    not_found = WebDriverWait(context.driver, WAIT_SECONDS).until(
+        expected_conditions.invisibility_of_element(
+            (By.XPATH, "//*[text()=]'{}'".format(name))
+        )
+    )
     error_msg = "I should not see '%s' in '%s'" % (name, element.text)
-    ensure(name in element.text, False, error_msg)
+    ensure(not_found, True, error_msg)
 
 
 @then('I should see "{name}" in the results')

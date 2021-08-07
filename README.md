@@ -159,7 +159,3 @@ $ vagrant destroy
 ### Deactivate
 
 - PUT /customers/customer_id (int)/deactivate
-
-### Get Addresses
-
-- GET /customers/customer_id (int)/addresses/address_id (int)

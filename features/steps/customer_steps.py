@@ -5,6 +5,7 @@ import requests
 from behave import *
 from compare import expect, ensure
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions
@@ -73,10 +74,10 @@ def step_impl(context, button):
     button_id = button.lower() + '-btn'
     context.driver.find_element_by_id(button_id).click()
 
-
 @then('I should not see "{name}" in the results')
 def step_impl(context, name):
     element = context.driver.find_element_by_id('search-results')
+    context.driver.implicitly_wait(WAIT_SECONDS)
     error_msg = "I should not see '%s' in '%s'" % (name, element.text)
     ensure(name in element.text, False, error_msg)
 

@@ -79,7 +79,7 @@ def step_impl(context, name):
     element = context.driver.find_element_by_id('search-results')
     not_found = WebDriverWait(context.driver, WAIT_SECONDS).until(
         expected_conditions.invisibility_of_element(
-            (By.XPATH, "//*[text()=]'{}'".format(name))
+            (By.XPATH, "//*[text()='{}']".format(name))
         )
     )
     error_msg = "I should not see '%s' in '%s'" % (name, element.text)

@@ -45,6 +45,10 @@ $(function () {
     $("#flash-message").append(message);
   }
 
+  function validation_error() {
+    window.alert("Oops! Please enter the Customer ID.");
+  }
+
   // ****************************************
   // Create a Customer
   // ****************************************
@@ -160,6 +164,11 @@ $(function () {
   $("#deactivate-btn").click(function () {
     var customer_id = $("#customer_id").val();
 
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
+
     var ajax = $.ajax({
       type: "PUT",
       url: "api/customers/" + customer_id + "/deactivate",
@@ -184,6 +193,11 @@ $(function () {
   $("#activate-btn").click(function () {
     var customer_id = $("#customer_id").val();
 
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
+
     var ajax = $.ajax({
       type: "PUT",
       url: "api/customers/" + customer_id + "/activate",
@@ -206,6 +220,11 @@ $(function () {
 
   $("#retrieve-btn").click(function () {
     var customer_id = $("#customer_id").val();
+
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
 
     var ajax = $.ajax({
       type: "GET",
@@ -233,6 +252,11 @@ $(function () {
 
   $("#delete-btn").click(function () {
     var customer_id = $("#customer_id").val();
+
+    if (!customer_id) {
+      validation_error();
+      return;
+    }
 
     var ajax = $.ajax({
       type: "DELETE",

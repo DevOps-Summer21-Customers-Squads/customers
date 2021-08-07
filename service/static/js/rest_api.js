@@ -84,7 +84,7 @@ $(function () {
     // send it to the backend
     var ajax = $.ajax({
       type: "POST",
-      url: "/api/customers",
+      url: "api/customers",
       contentType: "application/json",
       data: JSON.stringify(customer),
     });
@@ -138,7 +138,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "PUT",
-      url: "/api/customers/" + customer_id,
+      url: "api/customers/" + customer_id,
       contentType: "application/json",
       data: JSON.stringify(customer),
     });
@@ -162,7 +162,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "PUT",
-      url: "/api/customers/" + customer_id + "/deactivate",
+      url: "api/customers/" + customer_id + "/deactivate",
       contentType: "application/json",
     });
 
@@ -186,7 +186,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "PUT",
-      url: "/api/customers/" + customer_id + "/activate",
+      url: "api/customers/" + customer_id + "/activate",
       contentType: "application/json",
     });
 
@@ -209,7 +209,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "GET",
-      url: "/api/customers/" + customer_id,
+      url: "api/customers/" + customer_id,
       contentType: "application/json",
       data: "",
     });
@@ -236,7 +236,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "DELETE",
-      url: "/api/customers/" + customer_id,
+      url: "api/customers/" + customer_id,
       contentType: "application/json",
       data: "",
     });
@@ -339,7 +339,7 @@ $(function () {
 
     var ajax = $.ajax({
       type: "GET",
-      url: "/api/customers?" + queryString,
+      url: "api/customers?" + queryString,
       contentType: "application/json",
       data: "",
     });

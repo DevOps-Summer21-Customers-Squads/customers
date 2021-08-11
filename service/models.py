@@ -135,7 +135,7 @@ class Customer(db.Model):
             logger.info('Customer saved!')
         except sqlalchemy.exc.IntegrityError as error:
             db.session.rollback()
-            raise DataValidationError("User ID already exisits")
+            raise DataValidationError("User ID already exists")
 
 
     def delete(self):

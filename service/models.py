@@ -40,8 +40,8 @@ address_id(int) - ID of the customer's primary address
 """
 
 import logging
-from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
+from flask_sqlalchemy import SQLAlchemy
 
 
 logger = logging.getLogger("flask.app")

@@ -132,6 +132,52 @@ class TestCustomerServer(unittest.TestCase):
         self.assertEqual(new_customer['user_id'], "confused", "user_id do not match")
         self.assertEqual(new_customer['active'], True, "active status not match")
 
+    def test_create_customer_duplicate_user_id(self):
+        """
+        Create a new Customer with duplicate user ID
+        """
+        body = {
+            "first_name": "Young",
+            "last_name": "Nick",
+            "user_id": "user1",
+            "password": "lakers",
+            "address": {
+                "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            },
+            "active": True
+        }
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        # Check the user ID is correct
+        new_customer = resp.get_json()
+        self.assertEqual(new_customer['user_id'], "user1", "user_id do not match")
+        
+        # Customer with duplicate user ID
+        body = {
+            "first_name": "Yang",
+            "last_name": "Nic",
+            "user_id": "user1",
+            "password": "password",
+            "address": {
+                "street": "100 W 100 St.",
+                "apartment": "100",
+                "city": "LA",
+                "state": "Cali",
+                "zip_code": "100"
+            },
+            "active": True
+        }
+        resp = self.app.post(BASE_URL,
+                             json=body,
+                             content_type=CONTENT_TYPE_JSON)
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST, "duplicate user ID not handled correctly")
+
     def test_index(self):
         """
         Customer Server index call

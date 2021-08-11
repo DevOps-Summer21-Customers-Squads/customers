@@ -41,6 +41,7 @@ address_id(int) - ID of the customer's primary address
 
 import logging
 from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy
 
 
 logger = logging.getLogger("flask.app")
@@ -129,8 +130,12 @@ class Customer(db.Model):
         """
         logger.info('Saving %s %s', self.first_name, self.last_name)
         db.session.add(self)
-        db.session.commit()
-        logger.info('Customer saved!')
+        try:
+            db.session.commit()
+            logger.info('Customer saved!')
+        except sqlalchemy.exc.IntegrityError as error:
+            db.session.rollback()
+            raise DataValidationError("User ID already exisits")
 
 
     def delete(self):
